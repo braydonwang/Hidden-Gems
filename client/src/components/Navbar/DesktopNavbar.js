@@ -23,11 +23,17 @@ export default function DesktopNavbar({ setMobileMenuOpen }) {
           <Bars3Icon className="h-6 w-6" aria-hidden="true" />
         </button>
       </div>
-      <Popover.Group className="hidden lg:flex lg:gap-x-12">
-        <a href="/mygems" className="text-lg font-bold leading-6 text-gray-900">
+      <Popover.Group className="hidden lg:flex lg:gap-x-14">
+        <a
+          href="/mygems"
+          className="text-lg font-semibold leading-6 text-gray-900"
+        >
           My Gems
         </a>
-        <a href="/mygems" className="text-lg font-bold leading-6 text-gray-900">
+        <a
+          href="/mygems"
+          className="text-lg font-semibold leading-6 text-gray-900"
+        >
           Create a Gem
         </a>
       </Popover.Group>
