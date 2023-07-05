@@ -8,7 +8,7 @@ import Register from "./components/Register";
 
 export default function App() {
   return (
-    <>
+    <div className="flex flex-col h-screen">
       <Navbar />
       <Router>
         <Routes>
@@ -18,6 +18,6 @@ export default function App() {
           <Route path="/mygems" element={<MyGems />} />
         </Routes>
       </Router>
-    </>
+    </div>
   );
 }
