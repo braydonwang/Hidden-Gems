@@ -16,7 +16,7 @@ export default function Home() {
           <Searchbar setCoordinates={setCoordinates} />
         </div>
       </form>
-      <div className="flex flex-row align-center pt-8 z-0 flex-1">
+      <div className="flex flex-row align-center pt-8 z-0 flex-1 overflow-y-auto">
         <GemDetail />
         <Map coordinates={coordinates} />
       </div>
