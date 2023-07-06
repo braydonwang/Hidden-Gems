@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Map from "./Map";
 import Dropdown from "./Search/Dropdown";
@@ -7,6 +7,15 @@ import GemDetail from "./GemDetail";
 
 export default function Home() {
   const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0 });
+  const [bounds, setBounds] = useState(null);
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      ({ coords: { latitude, longitude } }) => {
+        setCoordinates({ lat: latitude, lng: longitude });
+      }
+    );
+  }, []);
 
   return (
     <div className="flex flex-col flex-1 overflow-y-auto">
@@ -18,7 +27,11 @@ export default function Home() {
       </form>
       <div className="flex flex-row align-center pt-8 z-0 flex-1 overflow-y-auto">
         <GemDetail />
-        <Map coordinates={coordinates} />
+        <Map
+          coordinates={coordinates}
+          setCoordinates={setCoordinates}
+          setBounds={setBounds}
+        />
       </div>
     </div>
   );

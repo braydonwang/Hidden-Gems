@@ -32,7 +32,7 @@ export default function Dropdown() {
   };
 
   return (
-    <div className="flex flex-col flex-shrink-0 justify-center z-50">
+    <div className="flex flex-col flex-shrink-0 justify-center z-10">
       <Menu as="div" className="relative inline-block text-left pr-3 w-44">
         <div className="flex">
           <Menu.Button

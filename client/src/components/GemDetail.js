@@ -80,7 +80,7 @@ export default function GemDetail() {
         <p className="pr-1">Google Maps Link</p>
         <ArrowTopRightOnSquareIcon className="h-4 w-4" />
       </a>
-      <p className="text-base font-medium pt-5">
+      <p className="text-base font-medium pt-5 pb-10">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus
         porttitor eros gravida dapibus rhoncus. Fusce eget enim scelerisque,
         lacinia libero sit amet, rhoncus mi. Integer volutpat massa eget dui
