@@ -3,9 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
-	"time"
+	"os"
 
+	jwt "github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/mux"
 )
 
@@ -30,8 +32,25 @@ func NewAPIServer(listenAddr string, store Storage) *APIServer {
 func (s *APIServer) Run() {
 	router := mux.NewRouter()
 
+	router.HandleFunc("/users", makeHTTPHandleFunc(s.handleGetUsers))
 	router.HandleFunc("/login", makeHTTPHandleFunc(s.handleLogin))
 	router.HandleFunc("/register", makeHTTPHandleFunc(s.handleRegister))
+
+	log.Println("JSON API server running on port: ", s.listenAddr)
+	http.ListenAndServe(s.listenAddr, router)
+}
+
+func (s *APIServer) handleGetUsers(w http.ResponseWriter, r *http.Request) error {
+	if r.Method != "GET" {
+		return fmt.Errorf("method not allowed %s", r.Method)
+	}
+
+	users, err := s.store.GetUsers()
+	if err != nil {
+		return err
+	}
+
+	return WriteJSON(w, http.StatusOK, users)
 }
 
 func (s *APIServer) handleLogin(w http.ResponseWriter, r *http.Request) error {
@@ -49,15 +68,18 @@ func (s *APIServer) handleLogin(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	// TODO: Check if valid password and create JWT token
+	if !user.ValidPassword(req.Password) {
+		return fmt.Errorf("incorrect password")
+	}
+
+	token, err := createJWT(user)
+	if err != nil {
+		return err
+	}
 
 	resp := LoginResponse{
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-		Username:  user.Username,
-		Email:     user.Email,
-		Password:  user.EncryptedPassword,
-		Token:     "123",
+		Email: user.Email,
+		Token: token,
 	}
 
 	return WriteJSON(w, http.StatusOK, resp)
@@ -73,6 +95,11 @@ func (s *APIServer) handleRegister(w http.ResponseWriter, r *http.Request) error
 		return err
 	}
 
+	cur_user, err := s.store.GetUser(req.Email)
+	if cur_user != nil || err == nil {
+		return fmt.Errorf("email already in use: %s", req.Email)
+	}
+
 	user, err := NewUser(req.FirstName, req.LastName, req.Username, req.Email, req.Password)
 	if err != nil {
 		return err
@@ -82,7 +109,17 @@ func (s *APIServer) handleRegister(w http.ResponseWriter, r *http.Request) error
 		return err
 	}
 
-	return WriteJSON(w, http.StatusOK, user)
+	token, err := createJWT(user)
+	if err != nil {
+		return err
+	}
+
+	resp := RegisterResponse{
+		Email: user.Email,
+		Token: token,
+	}
+
+	return WriteJSON(w, http.StatusOK, resp)
 }
 
 func makeHTTPHandleFunc(f apiFunc) http.HandlerFunc {
@@ -93,21 +130,21 @@ func makeHTTPHandleFunc(f apiFunc) http.HandlerFunc {
 	}
 }
 
+func createJWT(user *User) (string, error) {
+	claims := &jwt.MapClaims{
+		"expiresAt": 15000,
+		"email":     user.Email,
+	}
+
+	secret := os.Getenv("JWT_SECRET")
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	return token.SignedString([]byte(secret))
+}
+
 func WriteJSON(w http.ResponseWriter, status int, v any) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 
 	return json.NewEncoder(w).Encode(v)
-}
-
-func NewUser(firstName string, lastName string, username string, email string, password string) (*User, error) {
-	// TODO: Encrypt password
-	return &User{
-		FirstName:         firstName,
-		LastName:          lastName,
-		Username:          username,
-		Email:             email,
-		EncryptedPassword: password,
-		CreatedAt:         time.Now().UTC(),
-	}, nil
 }
