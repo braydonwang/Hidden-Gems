@@ -10,6 +10,8 @@ import (
 type Storage interface {
 	GetUsers() ([]*User, error)
 	GetUser(string) (*User, error)
+	GetUserByID(int) (*User, error)
+	DeleteUser(int) error
 	CreateUser(*User) error
 }
 
@@ -82,6 +84,28 @@ func (s *PostgresStore) GetUser(email string) (*User, error) {
 	}
 
 	return nil, fmt.Errorf("User with email [%s] not found", email)
+}
+
+func (s *PostgresStore) GetUserByID(id int) (*User, error) {
+	rows, err := s.db.Query("select * from users where id = $1", id)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		return scanIntoUser(rows)
+	}
+
+	return nil, fmt.Errorf("User with id [%d] not found", id)
+}
+
+func (s *PostgresStore) DeleteUser(id int) error {
+	_, err := s.db.Query("delete from users where id = $1", id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *PostgresStore) CreateUser(user *User) error {

@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	jwt "github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/mux"
@@ -33,6 +34,7 @@ func (s *APIServer) Run() {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/users", makeHTTPHandleFunc(s.handleGetUsers))
+	router.HandleFunc("/user/{id}", makeHTTPHandleFunc(s.handleUser))
 	router.HandleFunc("/login", makeHTTPHandleFunc(s.handleLogin))
 	router.HandleFunc("/register", makeHTTPHandleFunc(s.handleRegister))
 
@@ -51,6 +53,39 @@ func (s *APIServer) handleGetUsers(w http.ResponseWriter, r *http.Request) error
 	}
 
 	return WriteJSON(w, http.StatusOK, users)
+}
+
+func (s *APIServer) handleUser(w http.ResponseWriter, r *http.Request) error {
+	id, err := getID(r)
+	if err != nil {
+		return err
+	}
+
+	if r.Method == "GET" {
+		return s.handleGetUser(w, r, id)
+	}
+	if r.Method == "DELETE" {
+		return s.handleDeleteUser(w, r, id)
+	}
+
+	return fmt.Errorf("method not allowed %s", r.Method)
+}
+
+func (s *APIServer) handleGetUser(w http.ResponseWriter, r *http.Request, id int) error {
+	user, err := s.store.GetUserByID(id)
+	if err != nil {
+		return err
+	}
+
+	return WriteJSON(w, http.StatusOK, user)
+}
+
+func (s *APIServer) handleDeleteUser(w http.ResponseWriter, r *http.Request, id int) error {
+	if err := s.store.DeleteUser(id); err != nil {
+		return err
+	}
+
+	return WriteJSON(w, http.StatusOK, id)
 }
 
 func (s *APIServer) handleLogin(w http.ResponseWriter, r *http.Request) error {
@@ -147,4 +182,13 @@ func WriteJSON(w http.ResponseWriter, status int, v any) error {
 	w.WriteHeader(status)
 
 	return json.NewEncoder(w).Encode(v)
+}
+
+func getID(r *http.Request) (int, error) {
+	idStr := mux.Vars(r)["id"]
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return 0, fmt.Errorf("invalid id given %s", idStr)
+	}
+	return id, nil
 }

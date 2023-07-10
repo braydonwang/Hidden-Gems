@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import authService from "../features/auth/authService";
 import logo from "../images/loginLogo.png";
 
 export default function Login() {
@@ -6,9 +8,13 @@ export default function Login() {
     email: "",
     password: "",
   });
+  const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+
+    const data = await authService.login(loginData).then(navigate("/"));
+    console.log(data);
   };
 
   return (

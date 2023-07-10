@@ -1,0 +1,30 @@
+{
+  "name": "hidden-gems",
+  "version": "1.0.0",
+  "description": "Uncover the Hidden Gems of the World",
+  "main": "index.js",
+  "scripts": {
+    "server": "cd server && make run",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "build": "cd client && npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/braydonwang/Hidden-Gems.git"
+  },
+  "keywords": [
+    "Hidden",
+    "Gems"
+  ],
+  "author": "Braydon Wang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/braydonwang/Hidden-Gems/issues"
+  },
+  "homepage": "https://github.com/braydonwang/Hidden-Gems#readme",
+  "dependencies": {
+    "concurrently": "^8.2.0"
+  }
+}
