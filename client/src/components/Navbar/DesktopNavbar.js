@@ -3,7 +3,11 @@ import { Bars3Icon } from "@heroicons/react/24/outline";
 
 import logoImg from "../../images/logo.png";
 
-export default function DesktopNavbar({ setMobileMenuOpen }) {
+export default function DesktopNavbar({
+  setMobileMenuOpen,
+  user,
+  handleLogout,
+}) {
   return (
     <nav
       className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8"
@@ -31,19 +35,28 @@ export default function DesktopNavbar({ setMobileMenuOpen }) {
           My Gems
         </a>
         <a
-          href="/mygems"
+          href="/create"
           className="text-lg font-semibold leading-6 text-gray-900"
         >
           Create a Gem
         </a>
       </Popover.Group>
       <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-        <a
-          href="/login"
-          className="text-base font-semibold leading-6 text-gray-900"
-        >
-          Log in <span aria-hidden="true">&rarr;</span>
-        </a>
+        {!user ? (
+          <a
+            href="/login"
+            className="text-base font-semibold leading-6 text-gray-900"
+          >
+            Log in <span aria-hidden="true">&rarr;</span>
+          </a>
+        ) : (
+          <button
+            onClick={handleLogout}
+            className="text-base font-semibold leading-6 text-gray-900"
+          >
+            Log out <span aria-hidden="true">&rarr;</span>
+          </button>
+        )}
       </div>
     </nav>
   );

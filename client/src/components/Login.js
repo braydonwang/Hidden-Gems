@@ -13,8 +13,7 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    const data = await authService.login(loginData).then(navigate("/"));
-    console.log(data);
+    await authService.login({ data: loginData, navigate });
   };
 
   return (

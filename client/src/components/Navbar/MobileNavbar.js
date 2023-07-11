@@ -3,7 +3,12 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 
 import logoImg from "../../images/logo.png";
 
-export default function MobileNavbar({ mobileMenuOpen, setMobileMenuOpen }) {
+export default function MobileNavbar({
+  mobileMenuOpen,
+  setMobileMenuOpen,
+  user,
+  handleLogout,
+}) {
   return (
     <Dialog
       as="div"
@@ -35,19 +40,31 @@ export default function MobileNavbar({ mobileMenuOpen, setMobileMenuOpen }) {
                 My Gems
               </a>
               <a
-                href="/mygems"
+                href="/create"
                 className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
               >
                 Create a Gem
               </a>
             </div>
             <div className="py-6">
-              <a
-                href="/login"
-                className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-              >
-                Log in
-              </a>
+              {!user ? (
+                <a
+                  href="/login"
+                  className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                >
+                  Log in
+                </a>
+              ) : (
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                >
+                  Log out
+                </button>
+              )}
             </div>
           </div>
         </div>

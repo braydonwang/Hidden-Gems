@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import logo from "../images/loginLogo.png";
+import authService from "../features/auth/authService";
 
 export default function Register() {
   const [registerData, setRegisterData] = useState({
@@ -9,9 +11,12 @@ export default function Register() {
     email: "",
     password: "",
   });
+  const navigate = useNavigate();
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
+
+    await authService.register({ data: registerData, navigate });
   };
 
   return (

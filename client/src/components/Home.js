@@ -5,9 +5,18 @@ import Dropdown from "./Search/Dropdown";
 import Searchbar from "./Search/Searchbar";
 import GemDetail from "./GemDetail";
 
-export default function Home() {
+export default function Home({ setUser }) {
   const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0 });
   const [bounds, setBounds] = useState(null);
+
+  useEffect(() => {
+    const handleStorage = () => {
+      setUser(localStorage.getItem("user"));
+    };
+
+    window.addEventListener("storage", handleStorage());
+    return () => window.removeEventListener("storage", handleStorage());
+  }, [setUser]);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
