@@ -1,5 +1,8 @@
 import { Popover } from "@headlessui/react";
-import { Bars3Icon } from "@heroicons/react/24/outline";
+import {
+  Bars3Icon,
+  ArrowLeftOnRectangleIcon,
+} from "@heroicons/react/24/outline";
 
 import logoImg from "../../images/logo.png";
 
@@ -52,9 +55,13 @@ export default function DesktopNavbar({
         ) : (
           <button
             onClick={handleLogout}
-            className="text-base font-semibold leading-6 text-gray-900"
+            className="text-base font-semibold leading-6 text-gray-900 flex flex-row items-center"
           >
-            Log out <span aria-hidden="true">&rarr;</span>
+            Log out
+            <ArrowLeftOnRectangleIcon
+              className="w-5 h-5 ml-1"
+              aria-hidden="true"
+            />
           </button>
         )}
       </div>
