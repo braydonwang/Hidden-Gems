@@ -21,14 +21,15 @@ export default function MapPin({ id, category, pinHover }) {
     }
   };
 
-  console.log(pinHover);
-
   return (
     <img
       src={getPin()}
-      style={{ position: "absolute", width: "2.25rem", height: "4rem", left:  }}
       className={
-        (pinHover === id ? "h-20" : "h-16") + " w-9 transition-all absolute"
+        "absolute " +
+        (pinHover === id
+          ? "-left-6 -top-10 h-20 w-12"
+          : "-left-5 -top-8 h-16 w-10") +
+        " transition-all"
       }
       alt="Restaurant"
     />
