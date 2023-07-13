@@ -8,6 +8,7 @@ import GemDetail from "./GemDetail";
 export default function Home({ setUser }) {
   const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0 });
   const [bounds, setBounds] = useState(null);
+  const [pinClicked, setPinClicked] = useState(-1);
 
   useEffect(() => {
     const handleStorage = () => {
@@ -26,6 +27,8 @@ export default function Home({ setUser }) {
     );
   }, []);
 
+  console.log(pinClicked);
+
   return (
     <div className="flex flex-col flex-1 overflow-y-auto">
       <form className="flex justify-center pt-10">
@@ -40,6 +43,7 @@ export default function Home({ setUser }) {
           coordinates={coordinates}
           setCoordinates={setCoordinates}
           setBounds={setBounds}
+          setPinClicked={setPinClicked}
         />
       </div>
     </div>

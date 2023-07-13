@@ -3,22 +3,23 @@ import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
 import { classNames } from "../../utils/Classnames";
+import CATEGORY from "../../utils/CategoryData";
 
 const allCategoryNames = [
-  "All Categories",
-  "Food",
-  "Entertainment",
-  "Shopping",
-  "Photography",
+  CATEGORY.ALL_CATEGORIES,
+  CATEGORY.FOOD,
+  CATEGORY.ENTERTAINMENT,
+  CATEGORY.SHOPPING,
+  CATEGORY.PHOTOGRAPHY,
 ];
 
 export default function Dropdown() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [categoryNames, setCategoryNames] = useState([
-    "Food",
-    "Entertainment",
-    "Shopping",
-    "Photography",
+    CATEGORY.FOOD,
+    CATEGORY.ENTERTAINMENT,
+    CATEGORY.SHOPPING,
+    CATEGORY.PHOTOGRAPHY,
   ]);
   const [currentCategory, setCurrentCategory] = useState("All Categories");
 
