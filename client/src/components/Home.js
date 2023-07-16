@@ -27,8 +27,6 @@ export default function Home({ setUser }) {
     );
   }, []);
 
-  console.log(pinClicked);
-
   return (
     <div className="flex flex-col flex-1 overflow-y-auto">
       <form className="flex justify-center pt-10">

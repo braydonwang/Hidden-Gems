@@ -37,9 +37,36 @@ func (s *APIServer) Run() {
 	router.HandleFunc("/user/{id}", makeHTTPHandleFunc(s.handleUser))
 	router.HandleFunc("/login", makeHTTPHandleFunc(s.handleLogin))
 	router.HandleFunc("/register", makeHTTPHandleFunc(s.handleRegister))
+	router.HandleFunc("/gems", makeHTTPHandleFunc(s.handleGems))
 
 	log.Println("JSON API server running on port: ", s.listenAddr)
 	http.ListenAndServe(s.listenAddr, router)
+}
+
+func (s *APIServer) handleGems(w http.ResponseWriter, r *http.Request) error {
+	if r.Method == "GET" {
+		return s.handleGetGems(w, r)
+	}
+
+	if r.Method == "POST" {
+		return s.handleCreateGem(w, r)
+	}
+
+	return fmt.Errorf("method not allowed %s", r.Method)
+}
+
+func (s *APIServer) handleGetGems(w http.ResponseWriter, r *http.Request) error {
+	gems, err := s.store.GetGems()
+	if err != nil {
+		return err
+	}
+
+	return WriteJSON(w, http.StatusOK, gems)
+}
+
+func (s *APIServer) handleCreateGem(w http.ResponseWriter, r *http.Request) error {
+	var req CreateGemRequest
+
 }
 
 func (s *APIServer) handleGetUsers(w http.ResponseWriter, r *http.Request) error {

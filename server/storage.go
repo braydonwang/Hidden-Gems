@@ -8,6 +8,7 @@ import (
 )
 
 type Storage interface {
+	GetGems() ([]*Gem, error)
 	GetUsers() ([]*User, error)
 	GetUser(string) (*User, error)
 	GetUserByID(int) (*User, error)
@@ -37,7 +38,34 @@ func NewPostgresStore() (*PostgresStore, error) {
 }
 
 func (s *PostgresStore) Init() error {
-	return s.createUserTable()
+	_, err := s.db.Exec("create extension if not exists postgis")
+	if err != nil {
+		return err
+	}
+
+	if err := s.createUserTable(); err != nil {
+		return err
+	}
+
+	return s.createGemTable()
+}
+
+func (s *PostgresStore) createGemTable() error {
+	query := `create table if not exists gems (
+		id serial primary key,
+		username varchar(50),
+		user_id int references users(id),
+		name varchar(100),
+		location varchar(255),
+		description text,
+		point geometry(Point, 4326),
+		rating numeric(3, 2) check (rating >= 0 and rating <= 5),
+		num_ratings integer check (num_ratings >= 0),
+		created_at timestamp
+	)`
+
+	_, err := s.db.Exec(query)
+	return err
 }
 
 func (s *PostgresStore) createUserTable() error {
@@ -53,6 +81,24 @@ func (s *PostgresStore) createUserTable() error {
 
 	_, err := s.db.Exec(query)
 	return err
+}
+
+func (s *PostgresStore) GetGems() ([]*Gem, error) {
+	rows, err := s.db.Query("select id, username, user_id, name, location, description, ST_X(point) as longitude, ST_Y(point) as latitude, rating, num_ratings, created_at from gems")
+	if err != nil {
+		return nil, err
+	}
+
+	gems := []*Gem{}
+	for rows.Next() {
+		gem, err := scanIntoGem(rows)
+		if err != nil {
+			return nil, err
+		}
+		gems = append(gems, gem)
+	}
+
+	return gems, nil
 }
 
 func (s *PostgresStore) GetUsers() ([]*User, error) {
@@ -121,6 +167,15 @@ func (s *PostgresStore) CreateUser(user *User) error {
 	}
 
 	return nil
+}
+
+func scanIntoGem(rows *sql.Rows) (*Gem, error) {
+	gem := new(Gem)
+	err := rows.Scan(&gem.ID, &gem.Username, &gem.UserID, &gem.Name, &gem.Location, &gem.Description, &gem.Longitude, &gem.Latitude, &gem.Rating, &gem.NumOfRatings, &gem.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+	return gem, nil
 }
 
 func scanIntoUser(rows *sql.Rows) (*User, error) {

@@ -6,6 +6,10 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type CreateGemRequest struct {
+	// TODO: complete
+}
+
 type LoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
@@ -29,6 +33,19 @@ type RegisterResponse struct {
 	Token string `json:"token"`
 }
 
+type Gem struct {
+	ID           int       `json:"id"`
+	Username     string    `json:"username"`
+	UserID       int       `json:"userId"`
+	Name         string    `json:"name"`
+	Location     string    `json:"location"`
+	Description  string    `json:"description"`
+	Latitude     string    `json:"latitude"`
+	Longitude    string    `json:"longitude"`
+	Rating       int       `json:"rating"`
+	NumOfRatings int       `json:"numOfRatings"`
+	CreatedAt    time.Time `json:"createdAt"`
+}
 type User struct {
 	ID                int       `json:"id"`
 	FirstName         string    `json:"firstName"`
