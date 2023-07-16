@@ -66,7 +66,21 @@ func (s *APIServer) handleGetGems(w http.ResponseWriter, r *http.Request) error 
 
 func (s *APIServer) handleCreateGem(w http.ResponseWriter, r *http.Request) error {
 	var req CreateGemRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		return err
+	}
 
+	// TODO: prevent user from creating gem that has the same location as existing one
+	gem, err := NewGem(req.Username, req.UserID, req.Name, req.Location, req.Description, req.Latitude, req.Longitude, req.Rating)
+	if err != nil {
+		return err
+	}
+
+	if err := s.store.CreateGem(gem); err != nil {
+		return err
+	}
+
+	return WriteJSON(w, http.StatusOK, gem)
 }
 
 func (s *APIServer) handleGetUsers(w http.ResponseWriter, r *http.Request) error {

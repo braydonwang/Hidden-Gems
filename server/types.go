@@ -7,7 +7,14 @@ import (
 )
 
 type CreateGemRequest struct {
-	// TODO: complete
+	Username    string `json:"username"`
+	UserID      int    `json:"userId"`
+	Name        string `json:"name"`
+	Location    string `json:"location"`
+	Description string `json:"description"`
+	Latitude    string `json:"latitude"`
+	Longitude   string `json:"longitude"`
+	Rating      int    `json:"rating"`
 }
 
 type LoginRequest struct {
@@ -58,6 +65,21 @@ type User struct {
 
 func (u *User) ValidPassword(pw string) bool {
 	return bcrypt.CompareHashAndPassword([]byte(u.EncryptedPassword), []byte(pw)) == nil
+}
+
+func NewGem(username string, userId int, name string, location string, description string, latitude string, longitude string, rating int) (*Gem, error) {
+	return &Gem{
+		Username:     username,
+		UserID:       userId,
+		Name:         name,
+		Location:     location,
+		Description:  description,
+		Latitude:     latitude,
+		Longitude:    longitude,
+		Rating:       rating,
+		NumOfRatings: 1,
+		CreatedAt:    time.Now().UTC(),
+	}, nil
 }
 
 func NewUser(firstName string, lastName string, username string, email string, password string) (*User, error) {
