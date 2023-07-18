@@ -102,16 +102,6 @@ func (s *PostgresStore) GetGems() ([]*Gem, error) {
 	return gems, nil
 }
 
-// username varchar(50),
-// user_id int references users(id),
-// name varchar(100),
-// location varchar(255),
-// description text,
-// point geometry(Point, 4326),
-// rating numeric(3, 2) check (rating >= 0 and rating <= 5),
-// num_ratings integer check (num_ratings >= 0),
-// created_at timestamp
-
 func (s *PostgresStore) CreateGem(gem *Gem) error {
 	query := `insert into gems
 	(username, user_id, name, location, description, point, rating, num_ratings, created_at)
