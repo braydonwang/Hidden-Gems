@@ -7,14 +7,15 @@ import (
 )
 
 type CreateGemRequest struct {
-	Username    string `json:"username"`
-	UserID      int    `json:"userId"`
-	Name        string `json:"name"`
-	Location    string `json:"location"`
-	Description string `json:"description"`
-	Latitude    string `json:"latitude"`
-	Longitude   string `json:"longitude"`
-	Rating      int    `json:"rating"`
+	Username    string  `json:"username"`
+	UserID      int     `json:"userId"`
+	Name        string  `json:"name"`
+	Location    string  `json:"location"`
+	Description string  `json:"description"`
+	Category    string  `json:"category"`
+	Latitude    string  `json:"latitude"`
+	Longitude   string  `json:"longitude"`
+	Rating      float32 `json:"rating"`
 }
 
 type LoginRequest struct {
@@ -47,9 +48,10 @@ type Gem struct {
 	Name         string    `json:"name"`
 	Location     string    `json:"location"`
 	Description  string    `json:"description"`
+	Category     string    `json:"category"`
 	Latitude     string    `json:"latitude"`
 	Longitude    string    `json:"longitude"`
-	Rating       int       `json:"rating"`
+	Rating       float32   `json:"rating"`
 	NumOfRatings int       `json:"numOfRatings"`
 	CreatedAt    time.Time `json:"createdAt"`
 }
@@ -67,13 +69,14 @@ func (u *User) ValidPassword(pw string) bool {
 	return bcrypt.CompareHashAndPassword([]byte(u.EncryptedPassword), []byte(pw)) == nil
 }
 
-func NewGem(username string, userId int, name string, location string, description string, latitude string, longitude string, rating int) (*Gem, error) {
+func NewGem(username string, userId int, name string, location string, description string, category string, latitude string, longitude string, rating float32) (*Gem, error) {
 	return &Gem{
 		Username:     username,
 		UserID:       userId,
 		Name:         name,
 		Location:     location,
 		Description:  description,
+		Category:     category,
 		Latitude:     latitude,
 		Longitude:    longitude,
 		Rating:       rating,
