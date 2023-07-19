@@ -38,6 +38,7 @@ func (s *APIServer) Run() {
 	router.HandleFunc("/login", makeHTTPHandleFunc(s.handleLogin))
 	router.HandleFunc("/register", makeHTTPHandleFunc(s.handleRegister))
 	router.HandleFunc("/gems", makeHTTPHandleFunc(s.handleGems))
+	router.HandleFunc("/gems/min-lat={minLat}&max-lat={maxLat}&min-lng={minLng}&max-lng={maxLng}", makeHTTPHandleFunc(s.handleGetGemsByBounds))
 
 	log.Println("JSON API server running on port: ", s.listenAddr)
 	http.ListenAndServe(s.listenAddr, router)
@@ -71,7 +72,7 @@ func (s *APIServer) handleCreateGem(w http.ResponseWriter, r *http.Request) erro
 	}
 
 	// TODO: prevent user from creating gem that has the same location as existing one
-	gem, err := NewGem(req.Username, req.UserID, req.Name, req.Location, req.Description, req.Latitude, req.Longitude, req.Rating)
+	gem, err := NewGem(req.Username, req.UserID, req.Name, req.Location, req.Description, req.Category, req.Latitude, req.Longitude, req.Rating)
 	if err != nil {
 		return err
 	}
@@ -81,6 +82,23 @@ func (s *APIServer) handleCreateGem(w http.ResponseWriter, r *http.Request) erro
 	}
 
 	return WriteJSON(w, http.StatusOK, gem)
+}
+
+func (s *APIServer) handleGetGemsByBounds(w http.ResponseWriter, r *http.Request) error {
+	if r.Method != "GET" {
+		return fmt.Errorf("method not allowed %s", r.Method)
+	}
+	minLat, maxLat, minLng, maxLng, err := getBounds(r)
+	if err != nil {
+		return err
+	}
+
+	gems, err := s.store.GetGemsByBounds(minLat, maxLat, minLng, maxLng)
+	if err != nil {
+		return err
+	}
+
+	return WriteJSON(w, http.StatusOK, gems)
 }
 
 func (s *APIServer) handleGetUsers(w http.ResponseWriter, r *http.Request) error {
@@ -232,4 +250,13 @@ func getID(r *http.Request) (int, error) {
 		return 0, fmt.Errorf("invalid id given %s", idStr)
 	}
 	return id, nil
+}
+
+func getBounds(r *http.Request) (string, string, string, string, error) {
+	minLat := mux.Vars(r)["minLat"]
+	maxLat := mux.Vars(r)["maxLat"]
+	minLng := mux.Vars(r)["minLng"]
+	maxLng := mux.Vars(r)["maxLng"]
+
+	return minLat, maxLat, minLng, maxLng, nil
 }

@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GoogleMapReact from "google-map-react";
 import MapPin from "./MapPin";
 
 import CATEGORY from "../utils/CategoryData";
+import axios from "axios";
 
 export default function Map({
   coordinates,
@@ -11,7 +12,7 @@ export default function Map({
   setPinClicked,
 }) {
   const [pinHover, setPinHover] = useState(-1);
-  const places = [
+  const [places, setPlaces] = useState([
     {
       id: 4,
       name: "Pizzeria Badiali",
@@ -51,7 +52,13 @@ export default function Map({
       latitude: "43.80855049523862",
       longitude: "-79.54594510777328",
     },
-  ];
+  ]);
+
+  useEffect(() => {
+    axios.get("gems").then((response) => {
+      setPlaces(response.data);
+    });
+  }, []);
 
   const handleMapChange = (e) => {
     setCoordinates({ lat: e.center.lat, lng: e.center.lng });

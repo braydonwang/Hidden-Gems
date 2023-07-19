@@ -11,6 +11,14 @@ export default function Home({ setUser }) {
   const [pinClicked, setPinClicked] = useState(-1);
 
   useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      ({ coords: { latitude, longitude } }) => {
+        setCoordinates({ lat: latitude, lng: longitude });
+      }
+    );
+  }, []);
+
+  useEffect(() => {
     const handleStorage = () => {
       setUser(localStorage.getItem("user"));
     };
@@ -19,13 +27,7 @@ export default function Home({ setUser }) {
     return () => window.removeEventListener("storage", handleStorage());
   }, [setUser]);
 
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      ({ coords: { latitude, longitude } }) => {
-        setCoordinates({ lat: latitude, lng: longitude });
-      }
-    );
-  }, []);
+  console.log(bounds);
 
   return (
     <div className="flex flex-col flex-1 overflow-y-auto">
