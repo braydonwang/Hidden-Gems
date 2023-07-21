@@ -43,7 +43,7 @@ export default function Map({
     },
 
     {
-      id: 2,
+      id: 5,
       name: "Lorem ipsum howl odcmo apso mdocodo",
       location:
         "SDMC Parking Central Market Punjabi Bagh, West Punjabi Bagh, Punjabi Bagh, New Delhi, Delhi, India",
@@ -56,7 +56,7 @@ export default function Map({
 
   useEffect(() => {
     axios.get("gems").then((response) => {
-      setPlaces(response.data);
+      setPlaces([...places, ...response.data]);
     });
   }, []);
 
