@@ -10,6 +10,7 @@ import (
 type Storage interface {
 	GetGems() ([]*Gem, error)
 	GetGemsByBounds(string, string, string, string) ([]*Gem, error)
+	GetGemByCoords(string, string) (*Gem, error)
 	CreateGem(*Gem) error
 	GetUsers() ([]*User, error)
 	GetUser(string) (*User, error)
@@ -123,6 +124,21 @@ func (s *PostgresStore) GetGemsByBounds(minLat string, maxLat string, minLng str
 	}
 
 	return gems, nil
+}
+
+func (s *PostgresStore) GetGemByCoords(lat string, lng string) (*Gem, error) {
+	query := "select * from gems where ST_X(point) = $1 and ST_Y(point) = $2"
+
+	rows, err := s.db.Query(query, lat, lng)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		return scanIntoGem(rows)
+	}
+
+	return nil, nil
 }
 
 func (s *PostgresStore) CreateGem(gem *Gem) error {

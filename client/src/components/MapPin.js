@@ -25,6 +25,16 @@ export default function MapPin({ id, place, pinHover }) {
 
   return (
     <>
+      <div
+        id={"tooltip-animation-" + id}
+        role="tooltip"
+        className="absolute z-10 inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700 w-40"
+      >
+        <p className="font-bold leading-tight line-clamp-2">{name}</p>
+        <p className="text-xs line-clamp-4">{location}</p>
+        <Stars rating={rating} />
+        <div class="tooltip-arrow" data-popper-arrow></div>
+      </div>
       <img
         src={getPin()}
         className={
@@ -32,21 +42,11 @@ export default function MapPin({ id, place, pinHover }) {
           (pinHover === id
             ? "-left-6 -top-12 h-20 w-12"
             : "-left-5 -top-8 h-16 w-10") +
-          " transition-all"
+          " transition-all cursor-pointer"
         }
         data-tooltip-target={"tooltip-animation-" + id}
         alt="Map Pin"
       />
-      <div
-        id={"tooltip-animation-" + id}
-        role="tooltip"
-        className="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700 w-40"
-      >
-        <p className="font-bold leading-tight line-clamp-2">{name}</p>
-        <p className="text-xs line-clamp-4">{location}</p>
-        <Stars rating={rating} />
-        <div class="tooltip-arrow" data-popper-arrow></div>
-      </div>
     </>
   );
 }

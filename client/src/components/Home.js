@@ -5,21 +5,13 @@ import Dropdown from "./Search/Dropdown";
 import Searchbar from "./Search/Searchbar";
 import GemDetail from "./GemDetail";
 
-export default function Home({ setUser }) {
-  const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0 });
+export default function Home({ setUser, coordinates, setCoordinates }) {
   const [bounds, setBounds] = useState(null);
   const [pinClicked, setPinClicked] = useState(-1);
   const [searchQuery, setSearchQuery] = useState(null);
+  const [currentCategory, setCurrentCategory] = useState("All Categories");
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
-
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      ({ coords: { latitude, longitude } }) => {
-        setCoordinates({ lat: latitude, lng: longitude });
-      }
-    );
-  }, []);
 
   useEffect(() => {
     const handleStorage = () => {
@@ -46,7 +38,10 @@ export default function Home({ setUser }) {
     <div className="flex flex-col flex-1 overflow-y-auto">
       <form className="flex justify-center pt-10">
         <div className="flex w-6/12">
-          <Dropdown />
+          <Dropdown
+            currentCategory={currentCategory}
+            setCurrentCategory={setCurrentCategory}
+          />
           <Searchbar
             onLoad={onLoad}
             onPlaceChanged={onPlaceChanged}

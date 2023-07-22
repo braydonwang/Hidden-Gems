@@ -5,8 +5,14 @@ const getAllGems = async () => {
   return res.data;
 };
 
+const createGem = async (gemData) => {
+  const res = await axios.post("gems", gemData);
+  return res.data;
+};
+
 const gemService = {
   getAllGems,
+  createGem,
 };
 
 export default gemService;

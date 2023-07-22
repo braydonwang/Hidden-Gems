@@ -71,7 +71,14 @@ func (s *APIServer) handleCreateGem(w http.ResponseWriter, r *http.Request) erro
 		return err
 	}
 
-	// TODO: prevent user from creating gem that has the same location as existing one
+	curGem, err := s.store.GetGemByCoords(req.Latitude, req.Longitude)
+	if curGem != nil {
+		return fmt.Errorf("hidden gem at latitude %s and longitude %s has already been created", req.Latitude, req.Longitude)
+	}
+	if err != nil {
+		return err
+	}
+
 	gem, err := NewGem(req.Username, req.UserID, req.Name, req.Location, req.Description, req.Category, req.Latitude, req.Longitude, req.Rating)
 	if err != nil {
 		return err
@@ -172,8 +179,10 @@ func (s *APIServer) handleLogin(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	resp := LoginResponse{
-		Email: user.Email,
-		Token: token,
+		Username: user.Username,
+		UserID:   user.ID,
+		Email:    user.Email,
+		Token:    token,
 	}
 
 	return WriteJSON(w, http.StatusOK, resp)
@@ -189,8 +198,8 @@ func (s *APIServer) handleRegister(w http.ResponseWriter, r *http.Request) error
 		return err
 	}
 
-	cur_user, err := s.store.GetUser(req.Email)
-	if cur_user != nil || err == nil {
+	curUser, _ := s.store.GetUser(req.Email)
+	if curUser != nil {
 		return fmt.Errorf("email already in use: %s", req.Email)
 	}
 
@@ -209,8 +218,10 @@ func (s *APIServer) handleRegister(w http.ResponseWriter, r *http.Request) error
 	}
 
 	resp := RegisterResponse{
-		Email: user.Email,
-		Token: token,
+		Username: user.Username,
+		UserID:   user.ID,
+		Email:    user.Email,
+		Token:    token,
 	}
 
 	return WriteJSON(w, http.StatusOK, resp)

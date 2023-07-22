@@ -24,8 +24,10 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	Email string `json:"email"`
-	Token string `json:"token"`
+	Username string `json:"username"`
+	UserID   int    `json:"userId"`
+	Email    string `json:"email"`
+	Token    string `json:"token"`
 }
 
 type RegisterRequest struct {
@@ -37,8 +39,10 @@ type RegisterRequest struct {
 }
 
 type RegisterResponse struct {
-	Email string `json:"email"`
-	Token string `json:"token"`
+	Username string `json:"username"`
+	UserID   int    `json:"userId"`
+	Email    string `json:"email"`
+	Token    string `json:"token"`
 }
 
 type Gem struct {

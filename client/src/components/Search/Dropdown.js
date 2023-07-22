@@ -13,22 +13,40 @@ const allCategoryNames = [
   CATEGORY.PHOTOGRAPHY,
 ];
 
-export default function Dropdown() {
+const allCategoryNamesExcludingAll = [
+  CATEGORY.FOOD,
+  CATEGORY.ENTERTAINMENT,
+  CATEGORY.SHOPPING,
+  CATEGORY.PHOTOGRAPHY,
+];
+
+export default function Dropdown({
+  currentCategory,
+  setCurrentCategory,
+  isCreating = false,
+}) {
   const [showDropdown, setShowDropdown] = useState(false);
-  const [categoryNames, setCategoryNames] = useState([
-    CATEGORY.FOOD,
-    CATEGORY.ENTERTAINMENT,
-    CATEGORY.SHOPPING,
-    CATEGORY.PHOTOGRAPHY,
-  ]);
-  const [currentCategory, setCurrentCategory] = useState("All Categories");
+  const [categoryNames, setCategoryNames] = useState(
+    !isCreating
+      ? [
+          CATEGORY.FOOD,
+          CATEGORY.ENTERTAINMENT,
+          CATEGORY.SHOPPING,
+          CATEGORY.PHOTOGRAPHY,
+        ]
+      : [CATEGORY.ENTERTAINMENT, CATEGORY.SHOPPING, CATEGORY.PHOTOGRAPHY]
+  );
 
   const handleCategoryClick = (e, category) => {
     e.preventDefault();
     setShowDropdown(false);
     setCurrentCategory(category);
     setTimeout(() => {
-      setCategoryNames(allCategoryNames.filter((cat) => cat !== category));
+      !isCreating
+        ? setCategoryNames(allCategoryNames.filter((cat) => cat !== category))
+        : setCategoryNames(
+            allCategoryNamesExcludingAll.filter((cat) => cat !== category)
+          );
     }, 100);
   };
 

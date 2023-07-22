@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Input from "./Input";
 import authService from "../features/auth/authService";
 import logo from "../images/loginLogo.png";
 
@@ -28,53 +29,29 @@ export default function Login() {
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form className="space-y-6">
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-base font-medium leading-6 text-gray-900"
-              >
-                Email address
-              </label>
-              <div className="mt-2">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={loginData.email}
-                  onChange={(e) =>
-                    setLoginData({ ...loginData, email: e.target.value })
-                  }
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-amber-400 sm:text-sm sm:leading-6"
-                />
-              </div>
-            </div>
+            <Input
+              htmlFor="email"
+              name="email"
+              type="email"
+              autoC="email"
+              label="Email address"
+              value={loginData.email}
+              handleChange={(e) =>
+                setLoginData({ ...loginData, email: e.target.value })
+              }
+            />
 
-            <div>
-              <div className="flex items-center justify-between">
-                <label
-                  htmlFor="password"
-                  className="block text-base font-medium leading-6 text-gray-900"
-                >
-                  Password
-                </label>
-              </div>
-              <div className="mt-2">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={loginData.password}
-                  onChange={(e) =>
-                    setLoginData({ ...loginData, password: e.target.value })
-                  }
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-amber-400 sm:text-sm sm:leading-6"
-                />
-              </div>
-            </div>
+            <Input
+              htmlFor="password"
+              name="password"
+              type="password"
+              autoC="current-password"
+              label="Password"
+              value={loginData.password}
+              handleChange={(e) =>
+                setLoginData({ ...loginData, password: e.target.value })
+              }
+            />
 
             <div>
               <button

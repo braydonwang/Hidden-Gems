@@ -33,7 +33,7 @@ export default function Map({
       longitude: "-79.56937688572738",
     },
     {
-      id: 1,
+      id: 6,
       name: "Donut Shop",
       location: "Donut Falls Trailhead, Salt Lake City, UT, USA",
       category: CATEGORY.SHOPPING,
@@ -56,7 +56,7 @@ export default function Map({
 
   useEffect(() => {
     axios.get("gems").then((response) => {
-      setPlaces([...places, ...response.data]);
+      setPlaces(response.data);
     });
   }, []);
 
@@ -80,12 +80,11 @@ export default function Map({
   return (
     <div className="w-8/12 overflow-hidden">
       <GoogleMapReact
-        bootstrapURLKeys={{ key: "AIzaSyB4ehgdwynN_qJyyUddak7knJ7Uh48ZzWY" }}
+        bootstrapURLKeys={{ key: process.env.GOOGLE_MAPS_API_KEY }}
         yesIWantToUseGoogleMapApiInternals
         defautlCenter={coordinates}
         center={coordinates}
         defaultZoom={14}
-        margin={[50, 50, 50, 50]}
         options={""}
         onChange={(e) => handleMapChange(e)}
         onChildClick={handleChildClick}
