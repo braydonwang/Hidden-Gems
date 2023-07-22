@@ -38,6 +38,7 @@ func (s *APIServer) Run() {
 	router.HandleFunc("/login", makeHTTPHandleFunc(s.handleLogin))
 	router.HandleFunc("/register", makeHTTPHandleFunc(s.handleRegister))
 	router.HandleFunc("/gems", makeHTTPHandleFunc(s.handleGems))
+	router.HandleFunc("/gems/{id}", makeHTTPHandleFunc(s.handleGem))
 	router.HandleFunc("/gems/min-lat={minLat}&max-lat={maxLat}&min-lng={minLng}&max-lng={maxLng}", makeHTTPHandleFunc(s.handleGetGemsByBounds))
 
 	log.Println("JSON API server running on port: ", s.listenAddr)
@@ -51,6 +52,19 @@ func (s *APIServer) handleGems(w http.ResponseWriter, r *http.Request) error {
 
 	if r.Method == "POST" {
 		return s.handleCreateGem(w, r)
+	}
+
+	return fmt.Errorf("method not allowed %s", r.Method)
+}
+
+func (s *APIServer) handleGem(w http.ResponseWriter, r *http.Request) error {
+	id, err := getID(r)
+	if err != nil {
+		return err
+	}
+
+	if r.Method == "DELETE" {
+		return s.handleDeleteGem(w, r, id)
 	}
 
 	return fmt.Errorf("method not allowed %s", r.Method)
@@ -106,6 +120,14 @@ func (s *APIServer) handleGetGemsByBounds(w http.ResponseWriter, r *http.Request
 	}
 
 	return WriteJSON(w, http.StatusOK, gems)
+}
+
+func (s *APIServer) handleDeleteGem(w http.ResponseWriter, r *http.Request, id int) error {
+	if err := s.store.DeleteGemByID(id); err != nil {
+		return err
+	}
+
+	return WriteJSON(w, http.StatusOK, id)
 }
 
 func (s *APIServer) handleGetUsers(w http.ResponseWriter, r *http.Request) error {

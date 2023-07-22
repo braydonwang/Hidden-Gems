@@ -6,6 +6,7 @@ const getAllGems = async () => {
 };
 
 const createGem = async (gemData) => {
+  // TODO: error handling
   const res = await axios.post("gems", gemData);
   return res.data;
 };

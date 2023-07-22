@@ -12,6 +12,7 @@ type Storage interface {
 	GetGemsByBounds(string, string, string, string) ([]*Gem, error)
 	GetGemByCoords(string, string) (*Gem, error)
 	CreateGem(*Gem) error
+	DeleteGemByID(int) error
 	GetUsers() ([]*User, error)
 	GetUser(string) (*User, error)
 	GetUserByID(int) (*User, error)
@@ -127,9 +128,10 @@ func (s *PostgresStore) GetGemsByBounds(minLat string, maxLat string, minLng str
 }
 
 func (s *PostgresStore) GetGemByCoords(lat string, lng string) (*Gem, error) {
-	query := "select * from gems where ST_X(point) = $1 and ST_Y(point) = $2"
+	query := `select id, username, user_id, name, location, description, category, ST_X(point) as longitude, ST_Y(point) as latitude, rating, num_ratings, created_at 
+	from gems where ST_X(point) = $1 and ST_Y(point) = $2`
 
-	rows, err := s.db.Query(query, lat, lng)
+	rows, err := s.db.Query(query, lng, lat)
 	if err != nil {
 		return nil, err
 	}
@@ -149,6 +151,15 @@ func (s *PostgresStore) CreateGem(gem *Gem) error {
 
 	_, err := s.db.Query(query, gem.Username, gem.UserID, gem.Name, gem.Location, gem.Description, gem.Category, gem.Longitude, gem.Latitude, gem.Rating, gem.NumOfRatings, gem.CreatedAt)
 
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *PostgresStore) DeleteGemByID(id int) error {
+	_, err := s.db.Query("delete from gems where id = $1", id)
 	if err != nil {
 		return err
 	}
