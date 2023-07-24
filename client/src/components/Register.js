@@ -3,8 +3,11 @@ import { useNavigate } from "react-router-dom";
 import Input from "./Input";
 import logo from "../images/loginLogo.png";
 import authService from "../features/auth/authService";
+import Alert from "./Alert";
 
 export default function Register() {
+  const [isError, setIsError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const [registerData, setRegisterData] = useState({
     firstName: "",
     lastName: "",
@@ -17,7 +20,11 @@ export default function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    await authService.register({ data: registerData, navigate });
+    const res = await authService.register({ data: registerData, navigate });
+    if (res.err) {
+      setIsError(true);
+      setErrorMsg(res.err.response.data.error);
+    }
   };
 
   return (
@@ -128,6 +135,13 @@ export default function Register() {
               Log in here!
             </a>
           </p>
+          {isError && (
+            <Alert
+              title="Error!"
+              message={errorMsg}
+              handleClose={() => setIsError(false)}
+            />
+          )}
         </div>
       </div>
     </>

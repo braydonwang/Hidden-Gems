@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "./Input";
+import Alert from "./Alert";
+
 import authService from "../features/auth/authService";
 import logo from "../images/loginLogo.png";
 
 export default function Login() {
+  const [isError, setIsError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
@@ -14,7 +18,11 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    await authService.login({ data: loginData, navigate });
+    const res = await authService.login({ data: loginData, navigate });
+    if (res.err) {
+      setIsError(true);
+      setErrorMsg(res.err.response.data.error);
+    }
   };
 
   return (
@@ -72,6 +80,13 @@ export default function Login() {
               Sign up here!
             </a>
           </p>
+          {isError && (
+            <Alert
+              title={"Error!"}
+              message={errorMsg}
+              handleClose={() => setIsError(false)}
+            />
+          )}
         </div>
       </div>
     </>

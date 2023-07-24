@@ -87,7 +87,7 @@ func (s *APIServer) handleCreateGem(w http.ResponseWriter, r *http.Request) erro
 
 	curGem, err := s.store.GetGemByCoords(req.Latitude, req.Longitude)
 	if curGem != nil {
-		return fmt.Errorf("hidden gem at latitude %s and longitude %s has already been created", req.Latitude, req.Longitude)
+		return fmt.Errorf("hidden gem at this location has already been created")
 	}
 	if err != nil {
 		return err

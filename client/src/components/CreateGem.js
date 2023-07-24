@@ -6,13 +6,16 @@ import Input from "./Input";
 import Dropdown from "./Search/Dropdown";
 import RatingInput from "./Rating/RatingInput";
 import Searchbar from "./Search/Searchbar";
+import Alert from "./Alert";
 import { PlusCircleIcon } from "@heroicons/react/20/solid";
-import gemService from "../features/gems/gemService";
 
+import gemService from "../features/gems/gemService";
 import CATEGORY from "../utils/CategoryData";
 
 export default function CreateGem({ user, setCoordinates }) {
   const navigate = useNavigate();
+  const [isError, setIsError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const [searchQuery, setSearchQuery] = useState(null);
   const [coords, setCoords] = useState({ lat: 0, lng: 0 });
   const [pinHover, setPinHover] = useState(-1);
@@ -49,19 +52,27 @@ export default function CreateGem({ user, setCoordinates }) {
   const handleAddImage = () => {};
 
   const handleCreateGem = async () => {
-    await gemService.createGem({
-      username: userJSON.username,
-      userId: userJSON.userId,
-      name: place.name,
-      location: place.location,
-      description: place.description,
-      category: place.category,
-      latitude: String(coords.lat),
-      longitude: String(coords.lng),
-      rating: place.rating,
+    const res = await gemService.createGem({
+      data: {
+        username: userJSON.username,
+        userId: userJSON.userId,
+        name: place.name,
+        location: place.location,
+        description: place.description,
+        category: place.category,
+        latitude: String(coords.lat),
+        longitude: String(coords.lng),
+        rating: place.rating,
+      },
+      setCoordinates,
+      coords,
+      navigate,
     });
-    setCoordinates(coords);
-    navigate("/");
+
+    if (res.err) {
+      setIsError(true);
+      setErrorMsg(res.err.response.data.error);
+    }
   };
 
   return (
@@ -184,6 +195,13 @@ export default function CreateGem({ user, setCoordinates }) {
       >
         Share it!
       </button>
+      {isError && (
+        <Alert
+          title={"Error!"}
+          message={errorMsg}
+          handleClose={() => setIsError(false)}
+        />
+      )}
     </div>
   );
 }

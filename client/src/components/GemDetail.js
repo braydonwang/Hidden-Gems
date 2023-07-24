@@ -70,7 +70,7 @@ export default function GemDetail() {
           </div>
         ))}
       </Carousel>
-      <Rating rating={4.95} />
+      <Rating rating={4.95} numRatings={23} />
       <a
         className="flex flex-row items-center pt-2 w-fit text-blue-700 hover:underline hover:underline-offset-2"
         href="https://www.google.com/maps?q=Pizzeria%20Badiali,%20Dovercourt%20Road,%20Toronto,%20ON"

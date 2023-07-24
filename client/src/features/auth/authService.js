@@ -1,19 +1,27 @@
 import axios from "axios";
 
 const login = async (user) => {
-  const res = await axios.post("login", user.data);
-  localStorage.setItem("user", JSON.stringify(res.data));
-  window.dispatchEvent(new Event("storage"));
-  user.navigate("/");
-  return res.data;
+  try {
+    const res = await axios.post("login", user.data);
+    localStorage.setItem("user", JSON.stringify(res.data));
+    window.dispatchEvent(new Event("storage"));
+    user.navigate("/");
+    return { data: res.data, err: null };
+  } catch (err) {
+    return { data: null, err };
+  }
 };
 
 const register = async (user) => {
-  const res = await axios.post("register", user.data);
-  localStorage.setItem("user", JSON.stringify(res.data));
-  window.dispatchEvent(new Event("storage"));
-  user.navigate("/");
-  return res.data;
+  try {
+    const res = await axios.post("register", user.data);
+    localStorage.setItem("user", JSON.stringify(res.data));
+    window.dispatchEvent(new Event("storage"));
+    user.navigate("/");
+    return { data: res.data, err: null };
+  } catch (err) {
+    return { data: null, err };
+  }
 };
 
 const authService = {

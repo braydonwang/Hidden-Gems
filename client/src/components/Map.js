@@ -85,7 +85,7 @@ export default function Map({
         defautlCenter={coordinates}
         center={coordinates}
         defaultZoom={14}
-        options={""}
+        options={{ clickableIcons: false }}
         onChange={(e) => handleMapChange(e)}
         onChildClick={handleChildClick}
         onChildMouseEnter={handleChildMouseEnter}
