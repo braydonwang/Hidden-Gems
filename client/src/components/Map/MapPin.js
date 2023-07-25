@@ -1,10 +1,10 @@
-import restaurantPin from "../images/restaurant-pin.png";
-import entertainmentPin from "../images/entertainment-pin.png";
-import shoppingPin from "../images/shopping-pin.png";
-import photographyPin from "../images/photography-pin.png";
-import Stars from "./Rating/Stars";
+import restaurantPin from "../../images/restaurant-pin.png";
+import entertainmentPin from "../../images/entertainment-pin.png";
+import shoppingPin from "../../images/shopping-pin.png";
+import photographyPin from "../../images/photography-pin.png";
+import Stars from "../Rating/Stars";
 
-import CATEGORY from "../utils/CategoryData";
+import CATEGORY from "../../utils/CategoryData";
 
 export default function MapPin({ id, place, pinHover }) {
   const { category, name, location, rating } = place;

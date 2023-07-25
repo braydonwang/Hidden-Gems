@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Input from "./Input";
-import Alert from "./Alert";
+import Input from "../components/Input";
+import Alert from "../components/Alert";
 
 import authService from "../features/auth/authService";
 import logo from "../images/loginLogo.png";

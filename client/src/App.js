@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
-import Home from "./components/Home";
-import Login from "./components/Login";
-import MyGems from "./components/MyGems";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import MyGems from "./pages/MyGems";
 import Navbar from "./components/Navbar/Navbar";
-import Register from "./components/Register";
-import CreateGem from "./components/CreateGem";
+import Register from "./pages/Register";
+import CreateGem from "./pages/CreateGem";
 
 export default function App() {
   const [user, setUser] = useState(localStorage.getItem("user"));

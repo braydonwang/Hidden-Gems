@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Input from "./Input";
+import Input from "../components/Input";
 import logo from "../images/loginLogo.png";
 import authService from "../features/auth/authService";
-import Alert from "./Alert";
+import Alert from "../components/Alert";
 
 export default function Register() {
   const [isError, setIsError] = useState(false);

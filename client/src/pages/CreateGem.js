@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GoogleMapReact from "google-map-react";
-import MapPin from "./MapPin";
-import Input from "./Input";
-import Dropdown from "./Search/Dropdown";
-import RatingInput from "./Rating/RatingInput";
-import Searchbar from "./Search/Searchbar";
-import Alert from "./Alert";
+import MapPin from "../components/Map/MapPin";
+import Input from "../components/Input";
+import Dropdown from "../components/Search/Dropdown";
+import RatingInput from "../components/Rating/RatingInput";
+import Searchbar from "../components/Search/Searchbar";
+import Alert from "../components/Alert";
 import { PlusCircleIcon } from "@heroicons/react/20/solid";
 
 import gemService from "../features/gems/gemService";

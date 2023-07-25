@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import GoogleMapReact from "google-map-react";
 import MapPin from "./MapPin";
 
-import CATEGORY from "../utils/CategoryData";
+import CATEGORY from "../../utils/CategoryData";
 import axios from "axios";
 
 export default function Map({

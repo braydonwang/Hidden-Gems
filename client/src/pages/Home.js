@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
-import Map from "./Map";
-import Dropdown from "./Search/Dropdown";
-import Searchbar from "./Search/Searchbar";
-import GemDetail from "./GemDetail";
+import Map from "../components/Map/Map";
+import Dropdown from "../components/Search/Dropdown";
+import Searchbar from "../components/Search/Searchbar";
+import GemDetail from "../components/GemDetail";
 
 export default function Home({ setUser, coordinates, setCoordinates }) {
   const [bounds, setBounds] = useState(null);
