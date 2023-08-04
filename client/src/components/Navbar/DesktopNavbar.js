@@ -32,12 +32,6 @@ export default function DesktopNavbar({
       </div>
       <Popover.Group className="hidden lg:flex lg:gap-x-14">
         <a
-          href="/mygems"
-          className="text-lg font-semibold leading-6 text-gray-900"
-        >
-          My Gems
-        </a>
-        <a
           href="/create"
           className="text-lg font-semibold leading-6 text-gray-900"
         >

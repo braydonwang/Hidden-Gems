@@ -3,7 +3,6 @@ import { Routes, Route, Navigate } from "react-router-dom";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import MyGems from "./pages/MyGems";
 import Navbar from "./components/Navbar/Navbar";
 import Register from "./pages/Register";
 import CreateGem from "./pages/CreateGem";
@@ -31,10 +30,6 @@ export default function App() {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route
-          path="/mygems"
-          element={!user ? <Navigate to="/login" replace /> : <MyGems />}
-        />
         <Route
           path="/create"
           element={
