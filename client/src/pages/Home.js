@@ -1,17 +1,27 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 import Map from "../components/Map/Map";
 import Dropdown from "../components/Search/Dropdown";
 import Searchbar from "../components/Search/Searchbar";
 import GemDetail from "../components/GemDetail";
+import GemList from "../components/GemList";
 
 export default function Home({ setUser, coordinates, setCoordinates }) {
+  const [place, setPlace] = useState(null);
+  const [places, setPlaces] = useState(null);
   const [bounds, setBounds] = useState(null);
   const [pinClicked, setPinClicked] = useState(-1);
   const [searchQuery, setSearchQuery] = useState(null);
   const [currentCategory, setCurrentCategory] = useState("All Categories");
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
+
+  useEffect(() => {
+    axios.get("gems").then((response) => {
+      setPlaces(response.data);
+    });
+  }, []);
 
   useEffect(() => {
     const handleStorage = () => {
@@ -21,6 +31,20 @@ export default function Home({ setUser, coordinates, setCoordinates }) {
     window.addEventListener("storage", handleStorage());
     return () => window.removeEventListener("storage", handleStorage());
   }, [setUser]);
+
+  useEffect(() => {
+    if (pinClicked === -1) {
+      setPlace(null);
+      return;
+    }
+
+    for (const p of places) {
+      if (p.id === pinClicked) {
+        setPlace(p);
+        return;
+      }
+    }
+  }, [pinClicked, places]);
 
   const onLoad = (autoC) => setSearchQuery(autoC);
 
@@ -33,6 +57,8 @@ export default function Home({ setUser, coordinates, setCoordinates }) {
     e.preventDefault();
     setCoordinates({ lat, lng });
   };
+
+  console.log({ place });
 
   return (
     <div className="flex flex-col flex-1 overflow-y-auto">
@@ -51,8 +77,13 @@ export default function Home({ setUser, coordinates, setCoordinates }) {
         </div>
       </form>
       <div className="flex flex-row align-center pt-8 z-0 flex-1 overflow-y-auto">
-        <GemDetail />
+        {place ? (
+          <GemDetail place={place} setPinClicked={setPinClicked} />
+        ) : (
+          <GemList />
+        )}
         <Map
+          places={places}
           coordinates={coordinates}
           setCoordinates={setCoordinates}
           setBounds={setBounds}
