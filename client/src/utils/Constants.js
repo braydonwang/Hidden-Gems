@@ -1,0 +1,4 @@
+export const TORONTO_COORDS = {
+  lat: 43.66583121158871,
+  lng: -79.38509373244385,
+};

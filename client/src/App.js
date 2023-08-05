@@ -7,12 +7,11 @@ import Navbar from "./components/Navbar/Navbar";
 import Register from "./pages/Register";
 import CreateGem from "./pages/CreateGem";
 
+import { TORONTO_COORDS } from "./utils/Constants";
+
 export default function App() {
   const [user, setUser] = useState(localStorage.getItem("user"));
-  const [coordinates, setCoordinates] = useState({
-    lat: 43.66583121158871,
-    lng: -79.38509373244385,
-  });
+  const [coordinates, setCoordinates] = useState(TORONTO_COORDS);
 
   return (
     <div className="flex flex-col h-screen">

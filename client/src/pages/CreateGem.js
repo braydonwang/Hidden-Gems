@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GoogleMapReact from "google-map-react";
+import S3 from "react-aws-s3";
 import MapPin from "../components/Map/MapPin";
 import Input from "../components/Input";
 import Dropdown from "../components/Search/Dropdown";
@@ -11,6 +12,15 @@ import { PlusCircleIcon } from "@heroicons/react/20/solid";
 
 import gemService from "../features/gems/gemService";
 import CATEGORY from "../utils/CategoryData";
+
+window.Buffer = window.Buffer || require("buffer").Buffer;
+
+const config = {
+  bucketName: process.env.REACT_APP_BUCKET_NAME,
+  region: process.env.REACT_APP_REGION,
+  accessKeyId: process.env.REACT_APP_ACCESS,
+  secretAccessKey: process.env.REACT_APP_SECRET,
+};
 
 export default function CreateGem({ user, setCoordinates }) {
   const navigate = useNavigate();
@@ -26,6 +36,7 @@ export default function CreateGem({ user, setCoordinates }) {
     rating: 1,
     description: "",
   });
+  const [selectedFile, setSelectedFile] = useState(null);
   const userJSON = JSON.parse(user);
 
   const onLoad = (autoC) => setSearchQuery(autoC);
@@ -73,6 +84,17 @@ export default function CreateGem({ user, setCoordinates }) {
       setIsError(true);
       setErrorMsg(res.err.response.data.error);
     }
+  };
+
+  const handleFileInput = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
+  const uploadFile = async () => {
+    const ReactS3Client = new S3(config);
+    ReactS3Client.uploadFile(selectedFile, selectedFile.name)
+      .then((data) => console.log(data.location))
+      .catch((err) => console.error(err));
   };
 
   return (
@@ -168,6 +190,8 @@ export default function CreateGem({ user, setCoordinates }) {
       <p className="text-base italic text-gray-500 mt-7 mb-2">
         Add some photos...
       </p>
+      <input type="file" onChange={handleFileInput} />
+      <button onClick={uploadFile}>Upload to S3</button>
       <PlusCircleIcon
         className="w-20 h-20 text-amber-400 hover:text-amber-500 cursor-pointer transition-all"
         onClick={handleAddImage}
