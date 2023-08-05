@@ -3,7 +3,9 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
+	"github.com/lib/pq"
 	_ "github.com/lib/pq"
 )
 
@@ -66,6 +68,7 @@ func (s *PostgresStore) createGemTable() error {
 		point geometry(Point, 4326),
 		rating numeric(3, 2) check (rating >= 0 and rating <= 5),
 		num_ratings integer check (num_ratings >= 0),
+		images text[],
 		created_at timestamp
 	)`
 
@@ -89,7 +92,7 @@ func (s *PostgresStore) createUserTable() error {
 }
 
 func (s *PostgresStore) GetGems() ([]*Gem, error) {
-	rows, err := s.db.Query("select id, username, user_id, name, location, description, category, ST_X(point) as longitude, ST_Y(point) as latitude, rating, num_ratings, created_at from gems")
+	rows, err := s.db.Query("select id, username, user_id, name, location, description, category, ST_X(point) as longitude, ST_Y(point) as latitude, rating, num_ratings, images, created_at from gems")
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +110,7 @@ func (s *PostgresStore) GetGems() ([]*Gem, error) {
 }
 
 func (s *PostgresStore) GetGemsByBounds(minLat string, maxLat string, minLng string, maxLng string) ([]*Gem, error) {
-	query := `select id, username, user_id, name, location, description, category, ST_X(point) as longitude, ST_Y(point) as latitude, rating, num_ratings, created_at from gems
+	query := `select id, username, user_id, name, location, description, category, ST_X(point) as longitude, ST_Y(point) as latitude, rating, num_ratings, images, created_at from gems
 	where ST_Contains(ST_MakeEnvelope($1, $2, $3, $4, 4326), point)`
 
 	rows, err := s.db.Query(query, minLng, maxLat, maxLng, minLat)
@@ -128,7 +131,7 @@ func (s *PostgresStore) GetGemsByBounds(minLat string, maxLat string, minLng str
 }
 
 func (s *PostgresStore) GetGemByCoords(lat string, lng string) (*Gem, error) {
-	query := `select id, username, user_id, name, location, description, category, ST_X(point) as longitude, ST_Y(point) as latitude, rating, num_ratings, created_at 
+	query := `select id, username, user_id, name, location, description, category, ST_X(point) as longitude, ST_Y(point) as latitude, rating, num_ratings, images, created_at 
 	from gems where ST_X(point) = $1 and ST_Y(point) = $2`
 
 	rows, err := s.db.Query(query, lng, lat)
@@ -145,11 +148,12 @@ func (s *PostgresStore) GetGemByCoords(lat string, lng string) (*Gem, error) {
 
 func (s *PostgresStore) CreateGem(gem *Gem) error {
 	query := `insert into gems
-	(username, user_id, name, location, description, category, point, rating, num_ratings, created_at)
+	(username, user_id, name, location, description, category, point, rating, num_ratings, images, created_at)
 	values
-	($1, $2, $3, $4, $5, $6, ST_SetSRID(ST_MakePoint(CAST($7 AS FLOAT), CAST($8 AS FLOAT)), 4326), $9, $10, $11)`
+	($1, $2, $3, $4, $5, $6, ST_SetSRID(ST_MakePoint(CAST($7 AS FLOAT), CAST($8 AS FLOAT)), 4326), $9, $10, $11, $12)`
+	formattedArray := "{" + strings.Join(gem.Images, ",") + "}"
 
-	_, err := s.db.Query(query, gem.Username, gem.UserID, gem.Name, gem.Location, gem.Description, gem.Category, gem.Longitude, gem.Latitude, gem.Rating, gem.NumOfRatings, gem.CreatedAt)
+	_, err := s.db.Query(query, gem.Username, gem.UserID, gem.Name, gem.Location, gem.Description, gem.Category, gem.Longitude, gem.Latitude, gem.Rating, gem.NumOfRatings, formattedArray, gem.CreatedAt)
 
 	if err != nil {
 		return err
@@ -237,7 +241,7 @@ func (s *PostgresStore) CreateUser(user *User) error {
 
 func scanIntoGem(rows *sql.Rows) (*Gem, error) {
 	gem := new(Gem)
-	err := rows.Scan(&gem.ID, &gem.Username, &gem.UserID, &gem.Name, &gem.Location, &gem.Description, &gem.Category, &gem.Longitude, &gem.Latitude, &gem.Rating, &gem.NumOfRatings, &gem.CreatedAt)
+	err := rows.Scan(&gem.ID, &gem.Username, &gem.UserID, &gem.Name, &gem.Location, &gem.Description, &gem.Category, &gem.Longitude, &gem.Latitude, &gem.Rating, &gem.NumOfRatings, pq.Array(&gem.Images), &gem.CreatedAt)
 	if err != nil {
 		return nil, err
 	}

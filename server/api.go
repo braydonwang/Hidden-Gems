@@ -93,7 +93,7 @@ func (s *APIServer) handleCreateGem(w http.ResponseWriter, r *http.Request) erro
 		return err
 	}
 
-	gem, err := NewGem(req.Username, req.UserID, req.Name, req.Location, req.Description, req.Category, req.Latitude, req.Longitude, req.Rating)
+	gem, err := NewGem(req.Username, req.UserID, req.Name, req.Location, req.Description, req.Category, req.Latitude, req.Longitude, req.Rating, req.Images)
 	if err != nil {
 		return err
 	}

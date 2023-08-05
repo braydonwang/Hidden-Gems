@@ -15,12 +15,6 @@ import QueueMusicIcon from "@mui/icons-material/QueueMusic";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import CATEGORY from "../utils/CategoryData";
 
-const imgData = [
-  "https://images.unsplash.com/photo-1540206395-68808572332f",
-  "https://images.unsplash.com/photo-1540206395-68808572332f",
-  "https://images.unsplash.com/photo-1540206395-68808572332f",
-];
-
 export default function GemDetail({ place, setPinClicked }) {
   const getIcon = () => {
     switch (place.category) {
@@ -82,9 +76,9 @@ export default function GemDetail({ place, setPinClicked }) {
         Posted by: {place.username}
       </p>
       <Carousel showArrows={true} autoPlay interval={5000} infiniteLoop>
-        {imgData.map((img) => (
-          <div className="h-72">
-            <img src={img} alt="Gem" />
+        {place.images.map((img) => (
+          <div>
+            <img className="object-contain max-h-56" src={img} alt="Gem" />
           </div>
         ))}
       </Carousel>

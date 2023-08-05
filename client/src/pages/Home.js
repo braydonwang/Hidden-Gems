@@ -58,8 +58,6 @@ export default function Home({ setUser, coordinates, setCoordinates }) {
     setCoordinates({ lat, lng });
   };
 
-  console.log({ place });
-
   return (
     <div className="flex flex-col flex-1 overflow-y-auto">
       <form className="flex justify-center pt-10">

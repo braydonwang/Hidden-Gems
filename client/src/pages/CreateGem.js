@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GoogleMapReact from "google-map-react";
 import S3 from "react-aws-s3";
+import { Carousel } from "react-responsive-carousel";
+
 import MapPin from "../components/Map/MapPin";
 import Input from "../components/Input";
 import Dropdown from "../components/Search/Dropdown";
@@ -12,6 +14,7 @@ import { PlusCircleIcon } from "@heroicons/react/20/solid";
 
 import gemService from "../features/gems/gemService";
 import CATEGORY from "../utils/CategoryData";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 
 window.Buffer = window.Buffer || require("buffer").Buffer;
 
@@ -36,7 +39,7 @@ export default function CreateGem({ user, setCoordinates }) {
     rating: 1,
     description: "",
   });
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [allImages, setAllImages] = useState([]);
   const userJSON = JSON.parse(user);
 
   const onLoad = (autoC) => setSearchQuery(autoC);
@@ -60,8 +63,6 @@ export default function CreateGem({ user, setCoordinates }) {
     setPinHover(-1);
   };
 
-  const handleAddImage = () => {};
-
   const handleCreateGem = async () => {
     const res = await gemService.createGem({
       data: {
@@ -74,6 +75,7 @@ export default function CreateGem({ user, setCoordinates }) {
         latitude: String(coords.lat),
         longitude: String(coords.lng),
         rating: place.rating,
+        images: allImages,
       },
       setCoordinates,
       coords,
@@ -86,15 +88,18 @@ export default function CreateGem({ user, setCoordinates }) {
     }
   };
 
-  const handleFileInput = (e) => {
-    setSelectedFile(e.target.files[0]);
-  };
-
-  const uploadFile = async () => {
+  const handleFileInput = async (e) => {
+    const img = e.target.files[0];
+    const name = `${Date.now()}_${img.name}`;
     const ReactS3Client = new S3(config);
-    ReactS3Client.uploadFile(selectedFile, selectedFile.name)
-      .then((data) => console.log(data.location))
-      .catch((err) => console.error(err));
+    ReactS3Client.uploadFile(img, name)
+      .then((data) => {
+        setAllImages((prevAllImages) => [...prevAllImages, data.location]);
+      })
+      .catch((err) => {
+        setIsError(true);
+        setErrorMsg(err);
+      });
   };
 
   return (
@@ -187,15 +192,37 @@ export default function CreateGem({ user, setCoordinates }) {
           />
         </div>
       </div>
-      <p className="text-base italic text-gray-500 mt-7 mb-2">
-        Add some photos...
-      </p>
-      <input type="file" onChange={handleFileInput} />
-      <button onClick={uploadFile}>Upload to S3</button>
-      <PlusCircleIcon
-        className="w-20 h-20 text-amber-400 hover:text-amber-500 cursor-pointer transition-all"
-        onClick={handleAddImage}
-      />
+      <div className="flex flex-row items-center gap-6">
+        {allImages.length > 0 && (
+          <Carousel
+            autoPlay
+            interval={5000}
+            infiniteLoop
+            className="w-min max-w-xl mt-8"
+          >
+            {allImages.map((img) => (
+              <div>
+                <img className="object-contain max-h-56" src={img} alt="Gem" />
+              </div>
+            ))}
+          </Carousel>
+        )}
+        <div className="flex flex-col items-center">
+          <p className="text-base italic text-gray-500 mt-7 mb-2">
+            {allImages.length > 0 ? "Add more photos!" : "Add some photos..."}
+          </p>
+          <label for="image-upload">
+            <PlusCircleIcon className="w-20 h-20 text-amber-400 hover:text-amber-500 cursor-pointer transition-all" />
+          </label>
+          <input
+            id="image-upload"
+            type="file"
+            className="hidden"
+            accept="image/*"
+            onChange={handleFileInput}
+          />
+        </div>
+      </div>
       <div className="w-full">
         <label
           htmlFor="description"
@@ -214,7 +241,7 @@ export default function CreateGem({ user, setCoordinates }) {
         </textarea>
       </div>
       <button
-        className="rounded-full bg-amber-400 px-6 py-2 font-semibold mt-5 text-lg hover:px-8 transition-all"
+        className="rounded-full bg-amber-400 px-6 py-2 font-semibold mt-5 text-lg hover:px-8 transition-all mb-5"
         onClick={handleCreateGem}
       >
         Share it!
