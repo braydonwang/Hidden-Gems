@@ -1,4 +1,3 @@
-import { useState } from "react";
 import GoogleMapReact from "google-map-react";
 import MapPin from "./MapPin";
 
@@ -7,17 +6,17 @@ export default function Map({
   coordinates,
   setCoordinates,
   setBounds,
-  setPinClicked,
+  setPlace,
+  pinHover,
+  setPinHover,
 }) {
-  const [pinHover, setPinHover] = useState(-1);
-
   const handleMapChange = (e) => {
     setCoordinates({ lat: e.center.lat, lng: e.center.lng });
     setBounds({ ne: e.marginBounds.ne, sw: e.marginBounds.sw });
   };
 
   const handleChildClick = (_, childProps) => {
-    setPinClicked(childProps.id);
+    setPlace(childProps.place);
   };
 
   const handleChildMouseEnter = (_, childProps) => {

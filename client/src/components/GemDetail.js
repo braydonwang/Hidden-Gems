@@ -2,57 +2,17 @@ import React from "react";
 import Rating from "./Rating/Rating";
 
 import { Carousel } from "react-responsive-carousel";
-import Avatar from "@mui/material/Avatar";
 import {
   ArrowUturnLeftIcon,
   ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/20/solid";
-import CameraAltIcon from "@mui/icons-material/CameraAlt";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import RestaurantIcon from "@mui/icons-material/Restaurant";
-import QueueMusicIcon from "@mui/icons-material/QueueMusic";
 
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import CATEGORY from "../utils/CategoryData";
+import Icon from "./Icon";
 
-export default function GemDetail({ place, setPinClicked }) {
-  const getIcon = () => {
-    switch (place.category) {
-      case CATEGORY.FOOD:
-        return (
-          <Avatar sx={{ bgcolor: "#F44336", width: 40, height: 40 }}>
-            <RestaurantIcon />
-          </Avatar>
-        );
-      case CATEGORY.ENTERTAINMENT:
-        return (
-          <Avatar sx={{ bgcolor: "#D8A012", width: 40, height: 40 }}>
-            <QueueMusicIcon />
-          </Avatar>
-        );
-      case CATEGORY.SHOPPING:
-        return (
-          <Avatar sx={{ bgcolor: "#EE58D6", width: 40, height: 40 }}>
-            <ShoppingCartIcon />
-          </Avatar>
-        );
-      case CATEGORY.PHOTOGRAPHY:
-        return (
-          <Avatar sx={{ bgcolor: "#3280F5", width: 40, height: 40 }}>
-            <CameraAltIcon />
-          </Avatar>
-        );
-      default:
-        return (
-          <Avatar sx={{ bgcolor: "#F44336", width: 40, height: 40 }}>
-            <RestaurantIcon />
-          </Avatar>
-        );
-    }
-  };
-
+export default function GemDetail({ place, setPlace }) {
   const handleBackButton = () => {
-    setPinClicked(-1);
+    setPlace(null);
   };
 
   return (
@@ -66,7 +26,7 @@ export default function GemDetail({ place, setPinClicked }) {
         </button>
       </div>
       <div className="flex flex-row pt-5 items-center">
-        {getIcon()}
+        <Icon category={place.category} />
         <p className="text-4xl font-medium tracking-tight pl-3">{place.name}</p>
       </div>
       <p className="text-lg font-semibold italic pt-2 text-gray-600 leading-snug">
@@ -78,7 +38,7 @@ export default function GemDetail({ place, setPinClicked }) {
       <Carousel showArrows={true} autoPlay interval={5000} infiniteLoop>
         {place.images.map((img) => (
           <div>
-            <img className="object-contain max-h-56" src={img} alt="Gem" />
+            <img className="object-cover max-h-56" src={img} alt="Gem" />
           </div>
         ))}
       </Carousel>
@@ -89,6 +49,7 @@ export default function GemDetail({ place, setPinClicked }) {
         target="_blank"
         rel="noopener noreferrer"
       >
+        <p style={{ textDecoration: "none" }}>📍</p>
         <p className="pr-1">Google Maps Link</p>
         <ArrowTopRightOnSquareIcon className="h-4 w-4" />
       </a>
