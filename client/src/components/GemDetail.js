@@ -44,16 +44,21 @@ export default function GemDetail({ place, setPlace }) {
       </Carousel>
       <Rating rating={place.rating} numRatings={place.numOfRatings} />
       <a
-        className="flex flex-row items-center pt-2 w-fit text-blue-700 hover:underline hover:underline-offset-2"
+        className="flex flex-row items-center pt-3 w-fit text-blue-700"
         href={`https://www.google.com/maps?q=${place.name} ${place.location}`}
         target="_blank"
         rel="noopener noreferrer"
       >
         <p style={{ textDecoration: "none" }}>📍</p>
-        <p className="pr-1">Google Maps Link</p>
+        <p className="pr-1 hover:underline hover:underline-offset-2">
+          Google Maps Link
+        </p>
         <ArrowTopRightOnSquareIcon className="h-4 w-4" />
       </a>
-      <p className="text-base font-medium pt-5 pb-10">{place.description}</p>
+      <p className="text-base font-medium pt-4 pb-7">{place.description}</p>
+      <button className="flex flex-row justify-center gap-2 w-40 py-2 mb-10 rounded-3xl bg-yellow-300 border-2 border-black font-semibold text-sm hover:bg-yellow-200 transition">
+        ⭐<p className="italic">Add a review!</p>
+      </button>
     </div>
   );
 }

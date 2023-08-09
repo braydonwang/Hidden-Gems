@@ -19,7 +19,6 @@ export default function Home({ setUser, coordinates, setCoordinates }) {
   const [lng, setLng] = useState(0);
 
   useEffect(() => {
-    console.log("test");
     axios.get("gems").then((response) => {
       setPlaces(response.data);
     });
@@ -58,8 +57,6 @@ export default function Home({ setUser, coordinates, setCoordinates }) {
     setCoordinates({ lat, lng });
   };
 
-  console.log(pinHover);
-
   return (
     <div className="flex flex-col flex-1 overflow-y-auto">
       <form className="flex justify-center pt-10">
@@ -76,6 +73,25 @@ export default function Home({ setUser, coordinates, setCoordinates }) {
           />
         </div>
       </form>
+      <div className="flex justify-center w-full">
+        <div className="flex flex-row w-6/12 pt-7 justify-between">
+          <button className="text-white opacity-80 hover:opacity-100 transition bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 font-semibold rounded-3xl text-sm px-5 py-2.5 text-center mr-2 mb-2 ">
+            📍 Toronto
+          </button>
+          <button className="text-white opacity-80 hover:opacity-100 transition bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 font-semibold rounded-3xl text-sm px-5 py-2.5 text-center mr-2 mb-2 ">
+            📍 New York
+          </button>
+          <button className="text-white opacity-80 hover:opacity-100 transition bg-gradient-to-r from-red-500 via-red-600 to-red-700 font-semibold rounded-3xl text-sm px-5 py-2.5 text-center mr-2 mb-2 ">
+            📍 London
+          </button>
+          <button className="text-white opacity-80 hover:opacity-100 transition bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700 font-semibold rounded-3xl text-sm px-5 py-2.5 text-center mr-2 mb-2 ">
+            📍 Tokyo
+          </button>
+          <button className="text-white opacity-80 hover:opacity-100 transition bg-gradient-to-r from-yellow-400 via-yellow-400 to-yellow-500 font-semibold rounded-3xl text-sm px-5 py-2.5 text-center mr-2 mb-2 ">
+            📍 Paris
+          </button>
+        </div>
+      </div>
       <div className="flex flex-row align-center pt-8 z-0 flex-1 overflow-y-auto">
         {place ? (
           <GemDetail place={place} setPlace={setPlace} />
@@ -83,6 +99,7 @@ export default function Home({ setUser, coordinates, setCoordinates }) {
           <GemList
             places={curPlaces}
             setPlace={setPlace}
+            pinHover={pinHover}
             setPinHover={setPinHover}
           />
         )}
