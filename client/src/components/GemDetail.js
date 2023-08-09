@@ -2,18 +2,25 @@ import React from "react";
 import Rating from "./Rating/Rating";
 
 import { Carousel } from "react-responsive-carousel";
+import Icon from "./Icon";
 import {
   ArrowUturnLeftIcon,
   ArrowTopRightOnSquareIcon,
+  PencilSquareIcon,
+  TrashIcon,
 } from "@heroicons/react/20/solid";
 
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import Icon from "./Icon";
+import getDefaultImg from "../utils/DefaultImg";
 
 export default function GemDetail({ place, setPlace }) {
   const handleBackButton = () => {
     setPlace(null);
   };
+
+  const handleEditButton = () => {};
+
+  const handleDeleteButton = () => {};
 
   return (
     <div className="flex flex-col w-4/12 px-6 border border-t-gray-300 pt-5 overflow-y-auto">
@@ -24,6 +31,20 @@ export default function GemDetail({ place, setPlace }) {
             aria-hidden="true"
           />
         </button>
+        <div className="flex flex-row gap-3 justify-center">
+          <button onClick={handleEditButton}>
+            <PencilSquareIcon
+              className="h-7 w-7 text-blue-600 hover:text-blue-800"
+              aria-hidden="true"
+            />
+          </button>
+          <button onClick={handleDeleteButton}>
+            <TrashIcon
+              className="h-7 w-7 text-red-600 hover:text-red-800"
+              aria-hidden="true"
+            />
+          </button>
+        </div>
       </div>
       <div className="flex flex-row pt-5 items-center">
         <Icon category={place.category} />
@@ -36,11 +57,21 @@ export default function GemDetail({ place, setPlace }) {
         Posted by: {place.username}
       </p>
       <Carousel showArrows={true} autoPlay interval={5000} infiniteLoop>
-        {place.images.map((img) => (
+        {place.images && place.images.length > 0 ? (
+          place.images.map((img) => (
+            <div>
+              <img className="object-cover max-h-56" src={img} alt="Gem" />
+            </div>
+          ))
+        ) : (
           <div>
-            <img className="object-cover max-h-56" src={img} alt="Gem" />
+            <img
+              className="object-cover max-h-56"
+              src={getDefaultImg(place.category)}
+              alt="Gem"
+            />
           </div>
-        ))}
+        )}
       </Carousel>
       <Rating rating={place.rating} numRatings={place.numOfRatings} />
       <a
@@ -56,7 +87,7 @@ export default function GemDetail({ place, setPlace }) {
         <ArrowTopRightOnSquareIcon className="h-4 w-4" />
       </a>
       <p className="text-base font-medium pt-4 pb-7">{place.description}</p>
-      <button className="flex flex-row justify-center gap-2 w-40 py-2 mb-10 rounded-3xl bg-yellow-300 border-2 border-black font-semibold text-sm hover:bg-yellow-200 transition">
+      <button className="flex flex-row justify-center gap-2 w-40 py-2 mb-10 opacity-90 rounded-3xl bg-yellow-300 border-2 border-black font-semibold text-sm hover:bg-yellow-200 transition">
         ⭐<p className="italic">Add a review!</p>
       </button>
     </div>
