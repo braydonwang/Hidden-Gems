@@ -8,7 +8,7 @@ import GemDetail from "../components/GemDetail";
 import GemList from "../components/GemList";
 import MajorCities from "../components/MajorCities";
 
-export default function Home({ setUser, coordinates, setCoordinates }) {
+export default function Home({ user, setUser, coordinates, setCoordinates }) {
   const [place, setPlace] = useState(null);
   const [places, setPlaces] = useState([]);
   const [curPlaces, setCurPlaces] = useState([]);
@@ -77,7 +77,7 @@ export default function Home({ setUser, coordinates, setCoordinates }) {
       <MajorCities setCoordinates={setCoordinates} />
       <div className="flex flex-row align-center pt-8 z-0 flex-1 overflow-y-auto">
         {place ? (
-          <GemDetail place={place} setPlace={setPlace} />
+          <GemDetail user={user} place={place} setPlace={setPlace} />
         ) : (
           <GemList
             places={curPlaces}

@@ -13,7 +13,13 @@ import {
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import getDefaultImg from "../utils/DefaultImg";
 
-export default function GemDetail({ place, setPlace }) {
+export default function GemDetail({ user, place, setPlace }) {
+  const userId = JSON.parse(user)?.userId || -1;
+
+  const isDisabled = () => {
+    return userId === -1 || place.userReviews.includes(userId);
+  };
+
   const handleBackButton = () => {
     setPlace(null);
   };
@@ -21,6 +27,8 @@ export default function GemDetail({ place, setPlace }) {
   const handleEditButton = () => {};
 
   const handleDeleteButton = () => {};
+
+  console.log(isDisabled());
 
   return (
     <div className="flex flex-col w-4/12 px-6 border border-t-gray-300 pt-5 overflow-y-auto">
@@ -31,20 +39,22 @@ export default function GemDetail({ place, setPlace }) {
             aria-hidden="true"
           />
         </button>
-        <div className="flex flex-row gap-3 justify-center">
-          <button onClick={handleEditButton}>
-            <PencilSquareIcon
-              className="h-7 w-7 text-blue-600 hover:text-blue-800"
-              aria-hidden="true"
-            />
-          </button>
-          <button onClick={handleDeleteButton}>
-            <TrashIcon
-              className="h-7 w-7 text-red-600 hover:text-red-800"
-              aria-hidden="true"
-            />
-          </button>
-        </div>
+        {userId === place.userId && (
+          <div className="flex flex-row gap-3 justify-center">
+            <button onClick={handleEditButton}>
+              <PencilSquareIcon
+                className="h-7 w-7 text-blue-600 hover:text-blue-800"
+                aria-hidden="true"
+              />
+            </button>
+            <button onClick={handleDeleteButton}>
+              <TrashIcon
+                className="h-7 w-7 text-red-600 hover:text-red-800"
+                aria-hidden="true"
+              />
+            </button>
+          </div>
+        )}
       </div>
       <div className="flex flex-row pt-5 items-center">
         <Icon category={place.category} />
@@ -87,7 +97,14 @@ export default function GemDetail({ place, setPlace }) {
         <ArrowTopRightOnSquareIcon className="h-4 w-4" />
       </a>
       <p className="text-base font-medium pt-4 pb-7">{place.description}</p>
-      <button className="flex flex-row justify-center gap-2 w-40 py-2 mb-10 opacity-90 rounded-3xl bg-yellow-300 border-2 border-black font-semibold text-sm hover:bg-yellow-200 transition">
+      <button
+        data-modal-target="defaultModal"
+        data-modal-toggle="defaultModal"
+        className={`flex flex-row justify-center gap-2 w-40 py-2 mb-10 opacity-90 rounded-3xl bg-yellow-300 border-2 border-black font-semibold text-sm transition ${
+          isDisabled() ? "opacity-50" : "hover:bg-yellow-200"
+        }`}
+        disabled={isDisabled()}
+      >
         ⭐<p className="italic">Add a review!</p>
       </button>
     </div>

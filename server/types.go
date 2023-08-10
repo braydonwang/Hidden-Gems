@@ -19,6 +19,10 @@ type CreateGemRequest struct {
 	Images      []string `json:"images"`
 }
 
+type ReviewGemRequest struct {
+	UserID int     `json:"userId"`
+	Rating float32 `json:"rating"`
+}
 type LoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
@@ -59,6 +63,7 @@ type Gem struct {
 	Rating       float32   `json:"rating"`
 	NumOfRatings int       `json:"numOfRatings"`
 	Images       []string  `json:"images"`
+	UserReviews  []int     `json:"userReviews"`
 	CreatedAt    time.Time `json:"createdAt"`
 }
 type User struct {
@@ -88,6 +93,7 @@ func NewGem(username string, userId int, name string, location string, descripti
 		Rating:       rating,
 		NumOfRatings: 1,
 		Images:       images,
+		UserReviews:  []int{userId},
 		CreatedAt:    time.Now().UTC(),
 	}, nil
 }

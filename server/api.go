@@ -40,6 +40,7 @@ func (s *APIServer) Run() {
 	router.HandleFunc("/gems", makeHTTPHandleFunc(s.handleGems))
 	router.HandleFunc("/gems/{id}", makeHTTPHandleFunc(s.handleGem))
 	router.HandleFunc("/gems/min-lat={minLat}&max-lat={maxLat}&min-lng={minLng}&max-lng={maxLng}", makeHTTPHandleFunc(s.handleGetGemsByBounds))
+	router.HandleFunc("/gems/review/{id}", makeHTTPHandleFunc(s.handleGemReview))
 
 	log.Println("JSON API server running on port: ", s.listenAddr)
 	http.ListenAndServe(s.listenAddr, router)
@@ -124,6 +125,28 @@ func (s *APIServer) handleGetGemsByBounds(w http.ResponseWriter, r *http.Request
 
 func (s *APIServer) handleDeleteGem(w http.ResponseWriter, r *http.Request, id int) error {
 	if err := s.store.DeleteGemByID(id); err != nil {
+		return err
+	}
+
+	return WriteJSON(w, http.StatusOK, id)
+}
+
+func (s *APIServer) handleGemReview(w http.ResponseWriter, r *http.Request) error {
+	if r.Method != "POST" {
+		return fmt.Errorf("method not allowed %s", r.Method)
+	}
+
+	id, err := getID(r)
+	if err != nil {
+		return err
+	}
+
+	var req ReviewGemRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		return err
+	}
+
+	if err := s.store.ReviewGem(id, req.UserID, req.Rating); err != nil {
 		return err
 	}
 

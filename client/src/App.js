@@ -21,6 +21,7 @@ export default function App() {
           path="/"
           element={
             <Home
+              user={user}
               setUser={setUser}
               coordinates={coordinates}
               setCoordinates={setCoordinates}

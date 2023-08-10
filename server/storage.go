@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/lib/pq"
@@ -15,6 +16,7 @@ type Storage interface {
 	GetGemByCoords(string, string) (*Gem, error)
 	CreateGem(*Gem) error
 	DeleteGemByID(int) error
+	ReviewGem(int, int, float32) error
 	GetUsers() ([]*User, error)
 	GetUser(string) (*User, error)
 	GetUserByID(int) (*User, error)
@@ -69,6 +71,7 @@ func (s *PostgresStore) createGemTable() error {
 		rating numeric(3, 2) check (rating >= 0 and rating <= 5),
 		num_ratings integer check (num_ratings >= 0),
 		images text[],
+		user_reviews int[],
 		created_at timestamp
 	)`
 
@@ -92,7 +95,7 @@ func (s *PostgresStore) createUserTable() error {
 }
 
 func (s *PostgresStore) GetGems() ([]*Gem, error) {
-	rows, err := s.db.Query("select id, username, user_id, name, location, description, category, ST_X(point) as longitude, ST_Y(point) as latitude, rating, num_ratings, images, created_at from gems")
+	rows, err := s.db.Query("select id, username, user_id, name, location, description, category, ST_X(point) as longitude, ST_Y(point) as latitude, rating, num_ratings, images, user_reviews, created_at from gems")
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +113,7 @@ func (s *PostgresStore) GetGems() ([]*Gem, error) {
 }
 
 func (s *PostgresStore) GetGemsByBounds(minLat string, maxLat string, minLng string, maxLng string) ([]*Gem, error) {
-	query := `select id, username, user_id, name, location, description, category, ST_X(point) as longitude, ST_Y(point) as latitude, rating, num_ratings, images, created_at from gems
+	query := `select id, username, user_id, name, location, description, category, ST_X(point) as longitude, ST_Y(point) as latitude, rating, num_ratings, images, user_reviews, created_at from gems
 	where ST_Contains(ST_MakeEnvelope($1, $2, $3, $4, 4326), point)`
 
 	rows, err := s.db.Query(query, minLng, maxLat, maxLng, minLat)
@@ -131,7 +134,7 @@ func (s *PostgresStore) GetGemsByBounds(minLat string, maxLat string, minLng str
 }
 
 func (s *PostgresStore) GetGemByCoords(lat string, lng string) (*Gem, error) {
-	query := `select id, username, user_id, name, location, description, category, ST_X(point) as longitude, ST_Y(point) as latitude, rating, num_ratings, images, created_at 
+	query := `select id, username, user_id, name, location, description, category, ST_X(point) as longitude, ST_Y(point) as latitude, rating, num_ratings, images, user_reviews, created_at 
 	from gems where ST_X(point) = $1 and ST_Y(point) = $2`
 
 	rows, err := s.db.Query(query, lng, lat)
@@ -148,12 +151,13 @@ func (s *PostgresStore) GetGemByCoords(lat string, lng string) (*Gem, error) {
 
 func (s *PostgresStore) CreateGem(gem *Gem) error {
 	query := `insert into gems
-	(username, user_id, name, location, description, category, point, rating, num_ratings, images, created_at)
+	(username, user_id, name, location, description, category, point, rating, num_ratings, images, user_reviews, created_at)
 	values
-	($1, $2, $3, $4, $5, $6, ST_SetSRID(ST_MakePoint(CAST($7 AS FLOAT), CAST($8 AS FLOAT)), 4326), $9, $10, $11, $12)`
-	formattedArray := "{" + strings.Join(gem.Images, ",") + "}"
+	($1, $2, $3, $4, $5, $6, ST_SetSRID(ST_MakePoint(CAST($7 AS FLOAT), CAST($8 AS FLOAT)), 4326), $9, $10, $11, $12, $13)`
+	formattedImageArray := "{" + strings.Join(gem.Images, ",") + "}"
+	formattedUserReviews := "{" + strconv.Itoa(gem.UserReviews[0]) + "}"
 
-	_, err := s.db.Query(query, gem.Username, gem.UserID, gem.Name, gem.Location, gem.Description, gem.Category, gem.Longitude, gem.Latitude, gem.Rating, gem.NumOfRatings, formattedArray, gem.CreatedAt)
+	_, err := s.db.Query(query, gem.Username, gem.UserID, gem.Name, gem.Location, gem.Description, gem.Category, gem.Longitude, gem.Latitude, gem.Rating, gem.NumOfRatings, formattedImageArray, formattedUserReviews, gem.CreatedAt)
 
 	if err != nil {
 		return err
@@ -164,6 +168,16 @@ func (s *PostgresStore) CreateGem(gem *Gem) error {
 
 func (s *PostgresStore) DeleteGemByID(id int) error {
 	_, err := s.db.Query("delete from gems where id = $1", id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *PostgresStore) ReviewGem(id int, userId int, rating float32) error {
+	query := "update gems set rating = $1, num_ratings = num_ratings + 1, user_reviews = user_reviews || $2 where id = $3"
+	_, err := s.db.Query(query, rating, userId, id)
 	if err != nil {
 		return err
 	}
@@ -241,10 +255,16 @@ func (s *PostgresStore) CreateUser(user *User) error {
 
 func scanIntoGem(rows *sql.Rows) (*Gem, error) {
 	gem := new(Gem)
-	err := rows.Scan(&gem.ID, &gem.Username, &gem.UserID, &gem.Name, &gem.Location, &gem.Description, &gem.Category, &gem.Longitude, &gem.Latitude, &gem.Rating, &gem.NumOfRatings, pq.Array(&gem.Images), &gem.CreatedAt)
+	var tempUserReviews pq.Int64Array
+	err := rows.Scan(&gem.ID, &gem.Username, &gem.UserID, &gem.Name, &gem.Location, &gem.Description, &gem.Category, &gem.Longitude, &gem.Latitude, &gem.Rating, &gem.NumOfRatings, pq.Array(&gem.Images), &tempUserReviews, &gem.CreatedAt)
 	if err != nil {
 		return nil, err
 	}
+	convUserReviews := make([]int, len(tempUserReviews))
+	for i, v := range tempUserReviews {
+		convUserReviews[i] = int(v)
+	}
+	gem.UserReviews = convUserReviews
 	return gem, nil
 }
 

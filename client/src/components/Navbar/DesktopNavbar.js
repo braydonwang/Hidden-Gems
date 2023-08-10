@@ -33,7 +33,7 @@ export default function DesktopNavbar({
       <Popover.Group className="hidden lg:flex lg:gap-x-14">
         <a
           href="/create"
-          className="text-lg font-semibold leading-6 text-gray-900"
+          className="text-lg font-semibold leading-6 text-gray-900 hover:font-bold transition"
         >
           Create a Gem
         </a>
@@ -42,14 +42,14 @@ export default function DesktopNavbar({
         {!user ? (
           <a
             href="/login"
-            className="text-base font-semibold leading-6 text-gray-900"
+            className="text-base font-semibold leading-6 text-gray-900 hover:font-bold"
           >
             Log in <span aria-hidden="true">&rarr;</span>
           </a>
         ) : (
           <button
             onClick={handleLogout}
-            className="text-base font-semibold leading-6 text-gray-900 flex flex-row items-center"
+            className="text-base font-semibold leading-6 text-gray-900 flex flex-row items-center hover:font-bold"
           >
             Log out
             <ArrowLeftOnRectangleIcon

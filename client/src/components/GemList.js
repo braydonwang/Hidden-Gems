@@ -44,7 +44,7 @@ export default function GemList({ places, setPlace, pinHover, setPinHover }) {
           </div>
         ))
       ) : (
-        <div className="flex flex-col items-center mt-auto px-6">
+        <div className="flex flex-col items-center my-auto px-6">
           <img className="h-2/5" src={listLogo} alt="Logo" />
           <p className="text-lg text-center font-bold mt-5 text-gray-600">
             Sorry, we couldn't find any hidden gems here!
