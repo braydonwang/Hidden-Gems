@@ -77,7 +77,12 @@ export default function Home({ user, setUser, coordinates, setCoordinates }) {
       <MajorCities setCoordinates={setCoordinates} />
       <div className="flex flex-row align-center pt-8 z-0 flex-1 overflow-y-auto">
         {place ? (
-          <GemDetail user={user} place={place} setPlace={setPlace} />
+          <GemDetail
+            user={user}
+            place={place}
+            setPlace={setPlace}
+            setPlaces={setPlaces}
+          />
         ) : (
           <GemList
             places={curPlaces}

@@ -64,6 +64,10 @@ export default function CreateGem({ user, setCoordinates }) {
   };
 
   const handleCreateGem = async () => {
+    if (place.location === "") {
+      return;
+    }
+
     const res = await gemService.createGem({
       data: {
         username: userJSON.username,

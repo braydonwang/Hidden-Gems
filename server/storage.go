@@ -21,7 +21,7 @@ type Storage interface {
 	GetUser(string) (*User, error)
 	GetUserByID(int) (*User, error)
 	DeleteUser(int) error
-	CreateUser(*User) error
+	CreateUser(*User) (int, error)
 }
 
 type PostgresStore struct {
@@ -177,7 +177,7 @@ func (s *PostgresStore) DeleteGemByID(id int) error {
 
 func (s *PostgresStore) ReviewGem(id int, userId int, rating float32) error {
 	query := "update gems set rating = $1, num_ratings = num_ratings + 1, user_reviews = user_reviews || $2 where id = $3"
-	_, err := s.db.Query(query, rating, userId, id)
+	_, err := s.db.Exec(query, rating, pq.Array([]int{userId}), id)
 	if err != nil {
 		return err
 	}
@@ -238,19 +238,21 @@ func (s *PostgresStore) DeleteUser(id int) error {
 	return nil
 }
 
-func (s *PostgresStore) CreateUser(user *User) error {
+func (s *PostgresStore) CreateUser(user *User) (int, error) {
 	query := `insert into users
 	(first_name, last_name, username, email, encrypted_password, created_at)
 	values
-	($1, $2, $3, $4, $5, $6)`
+	($1, $2, $3, $4, $5, $6)
+	returning id`
 
-	_, err := s.db.Query(query, user.FirstName, user.LastName, user.Username, user.Email, user.EncryptedPassword, user.CreatedAt)
+	var id int
+	err := s.db.QueryRow(query, user.FirstName, user.LastName, user.Username, user.Email, user.EncryptedPassword, user.CreatedAt).Scan(&id)
 
 	if err != nil {
-		return err
+		return -1, err
 	}
 
-	return nil
+	return id, nil
 }
 
 func scanIntoGem(rows *sql.Rows) (*Gem, error) {

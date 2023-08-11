@@ -253,7 +253,8 @@ func (s *APIServer) handleRegister(w http.ResponseWriter, r *http.Request) error
 		return err
 	}
 
-	if err := s.store.CreateUser(user); err != nil {
+	id, err := s.store.CreateUser(user)
+	if err != nil {
 		return err
 	}
 
@@ -264,7 +265,7 @@ func (s *APIServer) handleRegister(w http.ResponseWriter, r *http.Request) error
 
 	resp := RegisterResponse{
 		Username: user.Username,
-		UserID:   user.ID,
+		UserID:   id,
 		Email:    user.Email,
 		Token:    token,
 	}
