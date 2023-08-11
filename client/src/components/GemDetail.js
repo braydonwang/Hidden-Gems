@@ -15,7 +15,7 @@ import gemService from "../features/gems/gemService";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import getDefaultImg from "../utils/DefaultImg";
 
-export default function GemDetail({ user, place, setPlace, setPlaces }) {
+export default function GemDetail({ user, place, setPlace, setAllPlaces }) {
   const userId = JSON.parse(user)?.userId || -1;
   const [open, setOpen] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
@@ -38,7 +38,7 @@ export default function GemDetail({ user, place, setPlace, setPlaces }) {
     setOpen(false);
     setPlace(null);
     setIsDelete(false);
-    setPlaces((prevPlaces) => prevPlaces.filter((p) => p.id !== place.id));
+    setAllPlaces((prevPlaces) => prevPlaces.filter((p) => p.id !== place.id));
 
     await gemService.deleteGem({ id: place.id });
   };

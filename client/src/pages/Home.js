@@ -7,9 +7,11 @@ import Searchbar from "../components/Search/Searchbar";
 import GemDetail from "../components/GemDetail";
 import GemList from "../components/GemList";
 import MajorCities from "../components/MajorCities";
+import CATEGORY from "../utils/CategoryData";
 
 export default function Home({ user, setUser, coordinates, setCoordinates }) {
   const [place, setPlace] = useState(null);
+  const [allPlaces, setAllPlaces] = useState(null);
   const [places, setPlaces] = useState([]);
   const [curPlaces, setCurPlaces] = useState([]);
   const [bounds, setBounds] = useState(null);
@@ -21,6 +23,7 @@ export default function Home({ user, setUser, coordinates, setCoordinates }) {
 
   useEffect(() => {
     axios.get("gems").then((response) => {
+      setAllPlaces(response.data);
       setPlaces(response.data);
     });
   }, []);
@@ -36,6 +39,18 @@ export default function Home({ user, setUser, coordinates, setCoordinates }) {
       )
     );
   }, [bounds, places]);
+
+  useEffect(() => {
+    if (!allPlaces) {
+      return;
+    }
+
+    if (currentCategory === CATEGORY.ALL_CATEGORIES) {
+      setPlaces(allPlaces);
+    } else {
+      setPlaces(allPlaces.filter((p) => p.category === currentCategory));
+    }
+  }, [currentCategory, allPlaces]);
 
   useEffect(() => {
     const handleStorage = () => {
@@ -81,7 +96,7 @@ export default function Home({ user, setUser, coordinates, setCoordinates }) {
             user={user}
             place={place}
             setPlace={setPlace}
-            setPlaces={setPlaces}
+            setAllPlaces={setAllPlaces}
           />
         ) : (
           <GemList
