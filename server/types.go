@@ -23,6 +23,10 @@ type ReviewGemRequest struct {
 	UserID int     `json:"userId"`
 	Rating float32 `json:"rating"`
 }
+
+type UserIDRequest struct {
+	UserID int `json:"userId"`
+}
 type LoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`

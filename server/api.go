@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -37,10 +39,10 @@ func (s *APIServer) Run() {
 	router.HandleFunc("/user/{id}", makeHTTPHandleFunc(s.handleUser))
 	router.HandleFunc("/login", makeHTTPHandleFunc(s.handleLogin))
 	router.HandleFunc("/register", makeHTTPHandleFunc(s.handleRegister))
-	router.HandleFunc("/gems", makeHTTPHandleFunc(s.handleGems))
+	router.HandleFunc("/gems", withJWTAuth(makeHTTPHandleFunc(s.handleGems), s.store))
 	router.HandleFunc("/gems/{id}", makeHTTPHandleFunc(s.handleGem))
 	router.HandleFunc("/gems/min-lat={minLat}&max-lat={maxLat}&min-lng={minLng}&max-lng={maxLng}", makeHTTPHandleFunc(s.handleGetGemsByBounds))
-	router.HandleFunc("/gems/review/{id}", makeHTTPHandleFunc(s.handleGemReview))
+	router.HandleFunc("/gems/review/{id}", withJWTAuth(makeHTTPHandleFunc(s.handleGemReview), s.store))
 
 	log.Println("JSON API server running on port: ", s.listenAddr)
 	http.ListenAndServe(s.listenAddr, router)
@@ -218,7 +220,7 @@ func (s *APIServer) handleLogin(w http.ResponseWriter, r *http.Request) error {
 		return fmt.Errorf("incorrect password")
 	}
 
-	token, err := createJWT(user)
+	token, err := createJWT(user, user.ID)
 	if err != nil {
 		return err
 	}
@@ -258,7 +260,7 @@ func (s *APIServer) handleRegister(w http.ResponseWriter, r *http.Request) error
 		return err
 	}
 
-	token, err := createJWT(user)
+	token, err := createJWT(user, id)
 	if err != nil {
 		return err
 	}
@@ -273,6 +275,67 @@ func (s *APIServer) handleRegister(w http.ResponseWriter, r *http.Request) error
 	return WriteJSON(w, http.StatusOK, resp)
 }
 
+func permissionDenied(w http.ResponseWriter) {
+	WriteJSON(w, http.StatusForbidden, ApiError{Error: "permission denied"})
+}
+
+func withJWTAuth(handlerFunc http.HandlerFunc, s Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			handlerFunc(w, r)
+			return
+		}
+
+		tokenString := r.Header.Get("x-jwt-token")
+
+		token, err := validateJWT(tokenString)
+		if err != nil {
+			permissionDenied(w)
+			return
+		}
+
+		if !token.Valid {
+			permissionDenied(w)
+			return
+		}
+
+		bodyBytes, err := io.ReadAll(r.Body)
+		if err != nil {
+			WriteJSON(w, http.StatusBadRequest, ApiError{Error: "failed to read request body"})
+			return
+		}
+
+		reader := bytes.NewReader(bodyBytes)
+		var req UserIDRequest
+		if err := json.NewDecoder(reader).Decode(&req); err != nil {
+			permissionDenied(w)
+			return
+		}
+
+		claims := token.Claims.(jwt.MapClaims)
+		if req.UserID != int(claims["userId"].(float64)) {
+			permissionDenied(w)
+			return
+		}
+
+		r.Body = io.NopCloser(bytes.NewReader(bodyBytes))
+
+		handlerFunc(w, r)
+	}
+}
+
+func validateJWT(tokenString string) (*jwt.Token, error) {
+	secret := os.Getenv("JWT_SECRET")
+
+	return jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+
+		return []byte(secret), nil
+	})
+}
+
 func makeHTTPHandleFunc(f apiFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := f(w, r); err != nil {
@@ -281,10 +344,11 @@ func makeHTTPHandleFunc(f apiFunc) http.HandlerFunc {
 	}
 }
 
-func createJWT(user *User) (string, error) {
+func createJWT(user *User, id int) (string, error) {
 	claims := &jwt.MapClaims{
 		"expiresAt": 15000,
 		"email":     user.Email,
+		"userId":    id,
 	}
 
 	secret := os.Getenv("JWT_SECRET")

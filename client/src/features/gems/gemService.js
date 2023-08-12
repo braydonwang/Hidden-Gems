@@ -11,7 +11,11 @@ const getAllGems = async () => {
 
 const createGem = async (gemData) => {
   try {
-    const res = await axios.post("gems", gemData.data);
+    const res = await axios.post("gems", gemData.data, {
+      headers: {
+        "x-jwt-token": gemData.token,
+      },
+    });
     gemData.setCoordinates(gemData.coords);
     gemData.navigate("/");
     return { data: res.data, err: null };
@@ -22,7 +26,11 @@ const createGem = async (gemData) => {
 
 const reviewGem = async (gemData) => {
   try {
-    const res = await axios.post("gems/review/" + gemData.id, gemData.data);
+    const res = await axios.post("gems/review/" + gemData.id, gemData.data, {
+      headers: {
+        "x-jwt-token": gemData.token,
+      },
+    });
     return { data: res.data, err: null };
   } catch (err) {
     return { data: null, err };

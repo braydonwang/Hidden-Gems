@@ -84,6 +84,7 @@ export default function CreateGem({ user, setCoordinates }) {
       setCoordinates,
       coords,
       navigate,
+      token: userJSON.token,
     });
 
     if (res.err) {

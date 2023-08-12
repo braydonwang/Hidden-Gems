@@ -16,7 +16,8 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import getDefaultImg from "../utils/DefaultImg";
 
 export default function GemDetail({ user, place, setPlace, setAllPlaces }) {
-  const userId = JSON.parse(user)?.userId || -1;
+  const userJSON = JSON.parse(user);
+  const userId = userJSON?.userId || -1;
   const [open, setOpen] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
   const [rating, setRating] = useState(0);
@@ -64,6 +65,7 @@ export default function GemDetail({ user, place, setPlace, setAllPlaces }) {
     await gemService.reviewGem({
       id: place.id,
       data: { userId, rating: parseFloat(newRating) },
+      token: userJSON.token,
     });
   };
 
