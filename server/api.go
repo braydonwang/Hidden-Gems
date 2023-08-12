@@ -127,9 +127,15 @@ func (s *APIServer) handleCreateGem(w http.ResponseWriter, r *http.Request) erro
 		return err
 	}
 
+	if err := s.store.CreateGem(gem); err != nil {
+		return err
+	}
+
 	val, err := s.rdb.Get(ctx, "dev:gems:all").Result()
 	var gems []*Gem
-	if err != nil {
+	if err == redis.Nil {
+		return WriteJSON(w, http.StatusOK, gem)
+	} else if err != nil {
 		return err
 	} else {
 		err = json.Unmarshal([]byte(val), &gems)
@@ -146,10 +152,6 @@ func (s *APIServer) handleCreateGem(w http.ResponseWriter, r *http.Request) erro
 
 	err = s.rdb.Set(ctx, "dev:gems:all", jsonData, 0).Err()
 	if err != nil {
-		return err
-	}
-
-	if err := s.store.CreateGem(gem); err != nil {
 		return err
 	}
 
@@ -180,7 +182,9 @@ func (s *APIServer) handleDeleteGem(w http.ResponseWriter, r *http.Request, id i
 
 	val, err := s.rdb.Get(ctx, "dev:gems:all").Result()
 	var gems []*Gem
-	if err != nil {
+	if err == redis.Nil {
+		return WriteJSON(w, http.StatusOK, id)
+	} else if err != nil {
 		return err
 	} else {
 		err = json.Unmarshal([]byte(val), &gems)
