@@ -178,6 +178,34 @@ func (s *APIServer) handleDeleteGem(w http.ResponseWriter, r *http.Request, id i
 		return err
 	}
 
+	val, err := s.rdb.Get(ctx, "dev:gems:all").Result()
+	var gems []*Gem
+	if err != nil {
+		return err
+	} else {
+		err = json.Unmarshal([]byte(val), &gems)
+		if err != nil {
+			return err
+		}
+	}
+
+	for i, gem := range gems {
+		if gem.ID == id {
+			gems = append(gems[:i], gems[i+1:]...)
+			break
+		}
+	}
+
+	jsonData, err := json.Marshal(gems)
+	if err != nil {
+		return err
+	}
+
+	err = s.rdb.Set(ctx, "dev:gems:all", jsonData, 0).Err()
+	if err != nil {
+		return err
+	}
+
 	return WriteJSON(w, http.StatusOK, id)
 }
 
