@@ -12,6 +12,7 @@ import (
 
 	jwt "github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/mux"
+	"github.com/redis/go-redis/v9"
 )
 
 type apiFunc func(http.ResponseWriter, *http.Request) error
@@ -23,12 +24,14 @@ type ApiError struct {
 type APIServer struct {
 	listenAddr string
 	store      Storage
+	rdb        *redis.Client
 }
 
-func NewAPIServer(listenAddr string, store Storage) *APIServer {
+func NewAPIServer(listenAddr string, store Storage, rdb *redis.Client) *APIServer {
 	return &APIServer{
 		listenAddr: listenAddr,
 		store:      store,
+		rdb:        rdb,
 	}
 }
 
@@ -74,7 +77,30 @@ func (s *APIServer) handleGem(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (s *APIServer) handleGetGems(w http.ResponseWriter, r *http.Request) error {
-	gems, err := s.store.GetGems()
+	val, err := s.rdb.Get(ctx, "dev:gems:all").Result()
+	var gems []*Gem
+
+	if err == redis.Nil {
+		gems, err = s.store.GetGems()
+		if err != nil {
+			return err
+		}
+
+		jsonData, err := json.Marshal(gems)
+		if err != nil {
+			return err
+		}
+
+		err = s.rdb.Set(ctx, "dev:gems:all", jsonData, 0).Err()
+		if err != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
+	} else {
+		err = json.Unmarshal([]byte(val), &gems)
+	}
+
 	if err != nil {
 		return err
 	}
@@ -97,6 +123,28 @@ func (s *APIServer) handleCreateGem(w http.ResponseWriter, r *http.Request) erro
 	}
 
 	gem, err := NewGem(req.Username, req.UserID, req.Name, req.Location, req.Description, req.Category, req.Latitude, req.Longitude, req.Rating, req.Images)
+	if err != nil {
+		return err
+	}
+
+	val, err := s.rdb.Get(ctx, "dev:gems:all").Result()
+	var gems []*Gem
+	if err != nil {
+		return err
+	} else {
+		err = json.Unmarshal([]byte(val), &gems)
+		if err != nil {
+			return err
+		}
+	}
+
+	gems = append(gems, gem)
+	jsonData, err := json.Marshal(gems)
+	if err != nil {
+		return err
+	}
+
+	err = s.rdb.Set(ctx, "dev:gems:all", jsonData, 0).Err()
 	if err != nil {
 		return err
 	}
