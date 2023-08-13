@@ -119,7 +119,7 @@ export default function CreateGem({ user, setCoordinates }) {
         handleSearch={() => {}}
         shouldShowButton={false}
       />
-      <div className="w-10/12 h-60 mt-5 mb-5 border-2 border-yellow-300">
+      <div className="w-10/12 h-60 shrink-0 mt-5 mb-5 border-2 border-yellow-300">
         <GoogleMapReact
           bootstrapURLKeys={{ key: process.env.GOOGLE_MAPS_API_KEY }}
           yesIWantToUseGoogleMapApiInternals
@@ -246,7 +246,7 @@ export default function CreateGem({ user, setCoordinates }) {
         </textarea>
       </div>
       <button
-        className="rounded-full bg-amber-400 px-6 py-2 font-semibold mt-5 text-lg hover:px-8 transition-all mb-5"
+        className="rounded-full bg-amber-400 px-6 py-2 font-semibold my-5 text-lg hover:px-8 transition-all"
         onClick={handleCreateGem}
       >
         Share it!
