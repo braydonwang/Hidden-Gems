@@ -66,9 +66,12 @@ redis-server
 ```
 
 ## Inside Look
+![Screen Shot 2023-08-13 at 6 17 17 PM](https://github.com/braydonwang/Hidden-Gems/assets/16049357/b300dca8-b2c2-4df8-8d37-2e19121f002f)
+![Screen Shot 2023-08-12 at 10 01 12 PM](https://github.com/braydonwang/Hidden-Gems/assets/16049357/9790d63d-64cf-4bec-9724-72fcbe5763f8)
+<img width="464" alt="Screen Shot 2023-08-12 at 10 02 29 PM" src="https://github.com/braydonwang/Hidden-Gems/assets/16049357/48decde8-7383-4930-a767-24f9709edeec">
+<img width="464" alt="Screen Shot 2023-08-12 at 10 02 29 PM" src="https://github.com/braydonwang/Hidden-Gems/assets/16049357/3cb5e49a-bf78-4da4-b57c-4a34e6a7aded">
 
 
-<!-- ROADMAP -->
 ## Next Steps
 
 - [x] Add review/rating system
