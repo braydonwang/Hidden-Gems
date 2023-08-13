@@ -14,7 +14,7 @@ type Storage interface {
 	GetGems() ([]*Gem, error)
 	GetGemsByBounds(string, string, string, string) ([]*Gem, error)
 	GetGemByCoords(string, string) (*Gem, error)
-	CreateGem(*Gem) error
+	CreateGem(*Gem) (int, error)
 	DeleteGemByID(int) error
 	ReviewGem(int, int, float32) error
 	GetUsers() ([]*User, error)
@@ -149,21 +149,23 @@ func (s *PostgresStore) GetGemByCoords(lat string, lng string) (*Gem, error) {
 	return nil, nil
 }
 
-func (s *PostgresStore) CreateGem(gem *Gem) error {
+func (s *PostgresStore) CreateGem(gem *Gem) (int, error) {
 	query := `insert into gems
 	(username, user_id, name, location, description, category, point, rating, num_ratings, images, user_reviews, created_at)
 	values
-	($1, $2, $3, $4, $5, $6, ST_SetSRID(ST_MakePoint(CAST($7 AS FLOAT), CAST($8 AS FLOAT)), 4326), $9, $10, $11, $12, $13)`
+	($1, $2, $3, $4, $5, $6, ST_SetSRID(ST_MakePoint(CAST($7 AS FLOAT), CAST($8 AS FLOAT)), 4326), $9, $10, $11, $12, $13)
+	returning id`
 	formattedImageArray := "{" + strings.Join(gem.Images, ",") + "}"
 	formattedUserReviews := "{" + strconv.Itoa(gem.UserReviews[0]) + "}"
 
-	_, err := s.db.Query(query, gem.Username, gem.UserID, gem.Name, gem.Location, gem.Description, gem.Category, gem.Longitude, gem.Latitude, gem.Rating, gem.NumOfRatings, formattedImageArray, formattedUserReviews, gem.CreatedAt)
+	var id int
+	err := s.db.QueryRow(query, gem.Username, gem.UserID, gem.Name, gem.Location, gem.Description, gem.Category, gem.Longitude, gem.Latitude, gem.Rating, gem.NumOfRatings, formattedImageArray, formattedUserReviews, gem.CreatedAt).Scan(&id)
 
 	if err != nil {
-		return err
+		return -1, err
 	}
 
-	return nil
+	return id, nil
 }
 
 func (s *PostgresStore) DeleteGemByID(id int) error {

@@ -77,7 +77,7 @@ func (s *APIServer) handleGem(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (s *APIServer) handleGetGems(w http.ResponseWriter, r *http.Request) error {
-	val, err := s.rdb.Get(ctx, "dev:gems:all").Result()
+	val, err := s.rdb.Get(ctx, redisKey).Result()
 	var gems []*Gem
 
 	if err == redis.Nil {
@@ -91,7 +91,7 @@ func (s *APIServer) handleGetGems(w http.ResponseWriter, r *http.Request) error 
 			return err
 		}
 
-		err = s.rdb.Set(ctx, "dev:gems:all", jsonData, 0).Err()
+		err = s.rdb.Set(ctx, redisKey, jsonData, 0).Err()
 		if err != nil {
 			return err
 		}
@@ -127,11 +127,12 @@ func (s *APIServer) handleCreateGem(w http.ResponseWriter, r *http.Request) erro
 		return err
 	}
 
-	if err := s.store.CreateGem(gem); err != nil {
+	id, err := s.store.CreateGem(gem)
+	if err != nil {
 		return err
 	}
 
-	val, err := s.rdb.Get(ctx, "dev:gems:all").Result()
+	val, err := s.rdb.Get(ctx, redisKey).Result()
 	var gems []*Gem
 	if err == redis.Nil {
 		return WriteJSON(w, http.StatusOK, gem)
@@ -144,14 +145,9 @@ func (s *APIServer) handleCreateGem(w http.ResponseWriter, r *http.Request) erro
 		}
 	}
 
+	gem.ID = id
 	gems = append(gems, gem)
-	jsonData, err := json.Marshal(gems)
-	if err != nil {
-		return err
-	}
-
-	err = s.rdb.Set(ctx, "dev:gems:all", jsonData, 0).Err()
-	if err != nil {
+	if err := s.setRedis(gems); err != nil {
 		return err
 	}
 
@@ -180,7 +176,7 @@ func (s *APIServer) handleDeleteGem(w http.ResponseWriter, r *http.Request, id i
 		return err
 	}
 
-	val, err := s.rdb.Get(ctx, "dev:gems:all").Result()
+	val, err := s.rdb.Get(ctx, redisKey).Result()
 	var gems []*Gem
 	if err == redis.Nil {
 		return WriteJSON(w, http.StatusOK, id)
@@ -200,13 +196,7 @@ func (s *APIServer) handleDeleteGem(w http.ResponseWriter, r *http.Request, id i
 		}
 	}
 
-	jsonData, err := json.Marshal(gems)
-	if err != nil {
-		return err
-	}
-
-	err = s.rdb.Set(ctx, "dev:gems:all", jsonData, 0).Err()
-	if err != nil {
+	if err := s.setRedis(gems); err != nil {
 		return err
 	}
 
@@ -229,6 +219,31 @@ func (s *APIServer) handleGemReview(w http.ResponseWriter, r *http.Request) erro
 	}
 
 	if err := s.store.ReviewGem(id, req.UserID, req.Rating); err != nil {
+		return err
+	}
+
+	val, err := s.rdb.Get(ctx, redisKey).Result()
+	var gems []*Gem
+	if err == redis.Nil {
+		return WriteJSON(w, http.StatusOK, id)
+	} else if err != nil {
+		return err
+	} else {
+		err = json.Unmarshal([]byte(val), &gems)
+		if err != nil {
+			return err
+		}
+	}
+
+	for i := range gems {
+		if gems[i].ID == id {
+			gems[i].Rating = req.Rating
+			gems[i].NumOfRatings = gems[i].NumOfRatings + 1
+			gems[i].UserReviews = append(gems[i].UserReviews, req.UserID)
+		}
+	}
+
+	if err := s.setRedis(gems); err != nil {
 		return err
 	}
 
@@ -353,6 +368,20 @@ func (s *APIServer) handleRegister(w http.ResponseWriter, r *http.Request) error
 	}
 
 	return WriteJSON(w, http.StatusOK, resp)
+}
+
+func (s *APIServer) setRedis(gems []*Gem) error {
+	jsonData, err := json.Marshal(gems)
+	if err != nil {
+		return err
+	}
+
+	err = s.rdb.Set(ctx, redisKey, jsonData, 0).Err()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func permissionDenied(w http.ResponseWriter) {

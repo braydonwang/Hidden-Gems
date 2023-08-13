@@ -7,6 +7,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+var redisKey = "dev:gems:all"
 var ctx = context.Background()
 
 func main() {
