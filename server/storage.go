@@ -29,7 +29,6 @@ type PostgresStore struct {
 }
 
 func NewPostgresStore() (*PostgresStore, error) {
-	// TODO: store postgres info in env
 	connStr := "user=postgres dbname=postgres password=hiddengems sslmode=disable"
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
