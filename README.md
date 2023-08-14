@@ -14,6 +14,11 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
+
+https://github.com/braydonwang/Hidden-Gems/assets/16049357/1b554a85-0639-4fe8-b7fd-cda292cb36b9
+
+
+
 HiddenGems is a full-stack app designed for avid explorers and enthusiasts seeking undiscovered treasures within their cities or around the globe. Users can not only discover gems recommended by others, but also contribute their own treasured spots, whether it's a delectable eatery, a captivating photography backdrop, a unique entertainment venue, or a secret shopping store.
 
 ### Features:
