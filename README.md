@@ -58,11 +58,11 @@ docker run --name postgres -e POSTGRES_PASSWORD=hiddengems -p 5432:5432 -d postg
 4. Create a public AWS S3 bucket
 5. Create a `.env` file in the `client` folder with the following information:
 ```
-GOOGLE_MAPS_API_KEY=<your-google-maps-api-key>
-REACT_APP_BUCKET_NAME=<your-s3-bucket-name>
-REACT_APP_REGION=<your-s3-bucket-region>
-REACT_APP_ACCESS=<your-s3-bucket-access-key>
-REACT_APP_SECRET=<your-s3-bucket-secret-key>
+GOOGLE_MAPS_API_KEY=[YOUR_GOOGLE_MAPS_API_KEY]
+REACT_APP_BUCKET_NAME=[YOUR_S3_BUCKET_NAME]
+REACT_APP_REGION=[YOUR_S3_BUCKET_REGION]
+REACT_APP_ACCESS=[YOUR_S3_BUCKET_ACCESS_KEY]
+REACT_APP_SECRET=[YOUR_S3_BUCKET_SECRET_KEY]
 GENERATE_SOURCEMAP=false
 ```
 6. Make sure redis server is running, or run this command to start it
