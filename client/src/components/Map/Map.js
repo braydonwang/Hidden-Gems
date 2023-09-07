@@ -30,9 +30,9 @@ export default function Map({
   return (
     <div className="w-8/12 overflow-hidden">
       <GoogleMapReact
-        bootstrapURLKeys={{ key: process.env.REACT_APP_GOOGLE_MAPS_API_KEY }}
+        bootstrapURLKeys={{ key: "AIzaSyBNVibJ9wSTPxvooiJDDL_DkejZqWzNT_g" }}
         yesIWantToUseGoogleMapApiInternals
-        defautlCenter={coordinates}
+        defaultCenter={coordinates}
         center={coordinates}
         defaultZoom={14}
         options={{ clickableIcons: false }}
