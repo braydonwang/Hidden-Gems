@@ -33,7 +33,7 @@ export default function MapPin({ id, place, pinHover }) {
         <p className="font-bold leading-tight line-clamp-2">{name}</p>
         <p className="text-xs line-clamp-4">{location}</p>
         <Stars rating={rating} />
-        <div class="tooltip-arrow" data-popper-arrow></div>
+        <div className="tooltip-arrow" data-popper-arrow></div>
       </div>
       <img
         src={getPin()}

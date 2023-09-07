@@ -107,6 +107,8 @@ export default function CreateGem({ user, setCoordinates }) {
       });
   };
 
+  console.log(process.env.REACT_APP_GOOGLE_MAPS_API_KEY);
+
   return (
     <div className="flex flex-col items-center h-full mx-auto mt-10">
       <h1 className="text-3xl font-medium mt-5 mb-7">
@@ -121,7 +123,7 @@ export default function CreateGem({ user, setCoordinates }) {
       />
       <div className="w-10/12 h-60 shrink-0 mt-5 mb-5 border-2 border-yellow-300">
         <GoogleMapReact
-          bootstrapURLKeys={{ key: process.env.GOOGLE_MAPS_API_KEY }}
+          bootstrapURLKeys={{ key: process.env.REACT_APP_GOOGLE_MAPS_API_KEY }}
           yesIWantToUseGoogleMapApiInternals
           defautlCenter={coords}
           center={coords}

@@ -11,6 +11,7 @@ export default function GemList({ places, setPlace, pinHover, setPinHover }) {
       {places && places.length > 0 ? (
         places.map((gem, ind) => (
           <div
+            key={ind}
             className={`flex flex-row items-center hover:opacity-70 cursor-pointer hover:shadow-md transition h-32 ${
               pinHover === gem.id && "opacity-70 shadow-md"
             } ${ind % 2 === 0 ? "bg-slate-100" : "bg-white"}`}

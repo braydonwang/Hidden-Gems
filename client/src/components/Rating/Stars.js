@@ -8,10 +8,10 @@ export default function Stars({ rating }) {
   return (
     <div className="flex items-center">
       {[...Array(numOfStars)].map((_, i) => (
-        <StarRating />
+        <StarRating key={i} />
       ))}
       {[...Array(numOfEmptyStars)].map((_, i) => (
-        <NoStarRating />
+        <NoStarRating key={i} />
       ))}
     </div>
   );
