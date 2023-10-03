@@ -55,7 +55,7 @@ npm install
 3. Start a local PostgreSQL container using docker
 
 ```sh
-docker run --name postgres -e POSTGRES_PASSWORD=hiddengems -p 5432:5432 -d postgres
+docker run --name postgres -e POSTGRES_PASSWORD=hiddengems -p 5432:5432 -d postgis/postgis
 ```
 
 4. Create a public AWS S3 bucket
