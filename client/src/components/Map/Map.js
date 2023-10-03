@@ -30,7 +30,7 @@ export default function Map({
   return (
     <div className="w-8/12 overflow-hidden">
       <GoogleMapReact
-        bootstrapURLKeys={{ key: "AIzaSyBNVibJ9wSTPxvooiJDDL_DkejZqWzNT_g" }}
+        bootstrapURLKeys={{ key: process.env.REACT_APP_GOOGLE_MAPS_API_KEY }}
         yesIWantToUseGoogleMapApiInternals
         defaultCenter={coordinates}
         center={coordinates}
