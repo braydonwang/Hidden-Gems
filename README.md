@@ -3,9 +3,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/othneildrew/Best-README-Template">
-    <img src="https://hiddengemsbw.s3.us-east-2.amazonaws.com/1691961203307_logo.png" alt="Logo" height="70">
-  </a>
+  <img src="https://hiddengemsbw.s3.us-east-2.amazonaws.com/1691961203307_logo.png" alt="Logo" height="70">
 
   <h3 align="center">HiddenGems</h3>
   <p align="center">Explore and contribute to a curated map of user-recommended hidden gems</p>
